@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on asong的情感小屋</title>
-    <link>http://example.org/categories/</link>
+    <link>https://asong2020.github.io/categories/</link>
     <description>Recent content in Categories on asong的情感小屋</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 20 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="http://example.org/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 20 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://asong2020.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go基础</title>
-      <link>http://example.org/categories/go%E5%9F%BA%E7%A1%80/</link>
+      <link>https://asong2020.github.io/categories/go%E5%9F%BA%E7%A1%80/</link>
       <pubDate>Thu, 20 May 2021 00:00:00 +0000</pubDate>
       
-      <guid>http://example.org/categories/go%E5%9F%BA%E7%A1%80/</guid>
+      <guid>https://asong2020.github.io/categories/go%E5%9F%BA%E7%A1%80/</guid>
       <description></description>
     </item>
     
