@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Golang on asong的情感小屋</title>
+    <link>http://example.org/tags/golang/</link>
+    <description>Recent content in Golang on asong的情感小屋</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 20 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="http://example.org/tags/golang/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go语言空结构体引发的大型打脸现场</title>
+      <link>http://example.org/posts/go%E4%B9%8B%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93/</link>
+      <pubDate>Thu, 20 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>http://example.org/posts/go%E4%B9%8B%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93/</guid>
+      <description>背景 哈喽，大家好，我是正在学习PS技术的asong，上周读者问了我一道题，觉得挺有意义的，就在这里分享一下，我们先来看一下这个题：
+type User struct { } func FPrint(u User) { fmt.Printf(&amp;#34;FPrint %p\n&amp;#34;, &amp;amp;u) } func main() { u := User{} FPrint(u) fmt.Printf(&amp;#34;main: %p\n&amp;#34;, &amp;amp;u) } // 运行结果 FPrint 0x118eff0 main: 0x118eff0 看了运行结果，大多数朋友应该和我一样，一脸懵逼？Go语言不是只有值传递嘛？之前我还写过一篇关于&amp;quot;Go语言参数传递是传值还是传引用吗？&amp;quot;，已经得出明确的结论，Go语言的确是只有值传递，这不是打脸了嘛。。。
+既然已经出现了这样的结果，那么就要给出一个合理的解释，不要再让气氛尴尬下去，于是我给出了我的猜想，如下：
+ 猜想一：这是一个bug 猜想二：结构体的特殊特性导致的  猜想一有点天马行空的感觉，暂时也无法验证，所以我们先来验证猜想二，请开始我的表演，都坐下，我要装逼了。。。。
+验证猜想二：结构体的特殊特性导致的 上面的那道题中传参是一个空结构体，如果改成一个带字段的结构体会是什么样呢？我们来看一下：
+type UserIsEmpty struct { } type UserHasField struct { Age uint64 `json:&amp;#34;age&amp;#34;` } func FPrint(uIsEmpty UserIsEmpty, uHasField UserHasField) { fmt.</description>
+    </item>
+    
+  </channel>
+</rss>
