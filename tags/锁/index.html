@@ -1,292 +1,308 @@
 <!DOCTYPE html>
 <html lang="en-us">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.80.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="asong">
+<meta name="keywords" content=", asong, go, golang">
+<meta name="description" content="">
 
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  	<meta property="og:title" content=" 锁 &middot;  asong的成长记录小屋" />
-  	<meta property="og:site_name" content="asong的成长记录小屋" />
-  	<meta property="og:url" content="https://asong2020.github.io/tags/%E9%94%81/" />
+<meta property="og:description" content="">
+<meta property="og:type" content="website">
+<meta property="og:title" content="锁">
+<meta name="twitter:title" content="锁">
+<meta property="og:url" content="https://asong2020.github.io/tags/%E9%94%81/">
+<meta property="twitter:url" content="https://asong2020.github.io/tags/%E9%94%81/">
+<meta property="og:site_name" content="asong的成长记录小屋">
+<meta property="og:description" content="">
+<meta name="twitter:description" content="">
+<meta property="og:locale" content="zh-cn">
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=640">
+  <meta property="twitter:image" content="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=640">
+
+
+    <title>锁</title>
+
+    <link rel="icon" href="https://asong2020.github.io/favicon.png">
+    
+      <link rel="alternate" type="application/rss+xml" title="RSS" href="https://asong2020.github.io/tags/%E9%94%81/index.xml">
+    
+
+    
+
+    <link rel="canonical" href="https://asong2020.github.io/tags/%E9%94%81/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
     
     
-    <meta property="og:type" content="website" />
+    <link rel="stylesheet" href="https://asong2020.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
     
-
-  <title>
-     锁 &middot;  asong的成长记录小屋
-  </title>
-
-    <meta name="description" content="this is my description" />
-
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <link rel="shortcut icon" href="https://asong2020.github.io/images/favicon.ico">
-	  <link rel="apple-touch-icon" href="https://asong2020.github.io/images/apple-touch-icon.png" />
     
-    <link rel="stylesheet" type="text/css" href="https://asong2020.github.io/css/screen.css" />
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400|Inconsolata" />
-
 
     
       
-          <link href="https://asong2020.github.io/index.xml" rel="alternate" type="application/rss+xml" title="asong的成长记录小屋" />
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="1">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://asong2020.github.io/">asong的成长记录小屋</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://asong2020.github.io/#about">
+    
+    
+    
       
-      
-        <link href="https://asong2020.github.io/tags/%E9%94%81/index.xml" rel="alternate" type="application/rss+xml" title="锁 &middot; asong的成长记录小屋" />
+        <img class="header-picture" src="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=90" alt="作者的图片" />
       
     
-    <meta name="generator" content="Hugo 0.80.0" />
+    </a>
+  
+</header>
 
-    <link rel="canonical" href="https://asong2020.github.io/tags/%E9%94%81/" />
+      <nav id="sidebar" data-behavior="1">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://asong2020.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=110" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">asong</h4>
+        
+          <h5 class="sidebar-profile-bio">欢迎关注公众号：<strong>Golang梦工厂</strong></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
 
-     
-</head>
-<body class="nav-closed">
-<div id="particles-js"></div>
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link open-algolia-search" href="https://asong2020.github.io/#search">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+      
+      <span class="sidebar-button-desc">搜索</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/asong2020" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+        
+
+      
+      <div id="main" data-behavior="1"
+        class="
+               hasCoverMetaIn
+               ">
+        
+          <section class="postShorten-group main-content-wrap">
+            
+            
+            
+
+          </section>
+        
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 asong. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=110" alt="作者的图片" />
+    
+    <h4 id="about-card-name">asong</h4>
+    
+      <div id="about-card-bio">欢迎关注公众号：<strong>Golang梦工厂</strong></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        后端开发工程师
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        深圳
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://asong2020.github.io/images/cover.jpg');"></div>
+    
   
 
 
- <div class="site-wrapper">
-
-
-
-
-	<header class="main-header" style="background-image: url(https://asong2020.github.io/images/user.jpg)">
-
-    <nav class="main-nav overlay clearfix">
-      
-        <a class="blog-logo" href="https://asong2020.github.io/"><img src="https://asong2020.github.io/images/user.png" alt="Home" /></a>
-      
-      
-          <a class="menu-button" href="#"><span class="burger">&#9776;</span><span class="word">Menu</span></a>
-      
-    </nav>
-    <div class="vertical">
-
-        <div class="main-header-content inner">
-            <h1 class="page-title">
-
-              <a class="btn-bootstrap-2" href="#content">asong的成长记录小屋</a>
-          </h1>
-        </div>
-</div>
-    <a class="scroll-down icon-arrow-left" href="#content"><span class="hidden">Scroll Down</span></a>
-</header>
-
-<main id="content" class="content" role="main">
     
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://asong2020.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+
+
+
     
-    
-    
-
-	<div class="extra-pagination inner">
-    <nav class="pagination" role="navigation">
-	
-	<span class="page-number">Page 1 of 1</span>
-	
-</nav>
-
-	</div>
-
-	
-	   
-<article class="post posts">
-    <header class="post-header">
-        <h2 class="post-title"><a href="https://asong2020.github.io/posts/go%E5%BA%94%E7%94%A8/go%E5%AE%9E%E7%8E%B0%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81/">Go语言如何实现可重入锁</a></h2>
-    </header>
-    <section class="post-excerpt">
-      <p>
-          <section class="post-content">
-            <h2 id="前言">前言</h2>
-<blockquote>
-<p>哈喽，大家好，我是<code>asong</code>。前几天一个读者问我如何使用<code>Go</code>语言实现可重入锁，突然想到<code>Go</code>语言中好像没有这个概念，平常在业务开发中也没有要用到可重入锁的概念，一时懵住了。之前在写<code>java</code>的时候，就会使用到可重入锁，然而写了这么久的<code>Go</code>，却没有使用过，这是怎么回事呢？这一篇文章就带你来解密～</p>
-</blockquote>
-<h2 id="什么是可重入锁">什么是可重入锁</h2>
-<p>之前写过<code>java</code>的同学对这个概念应该了如指掌，可重入锁又称为递归锁，是指在同一个线程在外层方法获取锁的时候，在进入该线程的内层方法时会自动获取锁，不会因为之前已经获取过还没释放而阻塞。<a href="https://tech.meituan.com/2018/11/15/java-lock.html">美团技术团队</a>的一篇关于锁的文章当中针对可重入锁进行了举例：</p>
-<p>假设现在有多个村民在水井排队打水，有管理员正在看管这口水井，村民在打水时，管理员允许锁和同一个人的多个水桶绑定，这个人用多个水桶打水时，第一个水桶和锁绑定并打完水之后，第二个水桶也可以直接和锁绑定并开始打水，所有的水桶都打完水之后打水人才会将锁还给管理员。这个人的所有打水流程都能够成功执行，后续等待的人也能够打到水。这就是可重入锁。</p>
-<p>下图摘自美团技术团队分享的文章：</p>
-<p><img src="https://song-oss.oss-cn-beijing.aliyuncs.com/golang_dream/article/static/%E6%88%AA%E5%B1%8F2021-05-29%20%E4%B8%8B%E5%8D%884.30.49.png" alt=""></p>
-<p>如果是非可重入锁，，此时管理员只允许锁和同一个人的一个水桶绑定。第一个水桶和锁绑定打完水之后并不会释放锁，导致第二个水桶不能和锁绑定也无法打水。当前线程出现死锁，整个等待队列中的所有线程都无法被唤醒。</p>
-<p>下图依旧摘自美团技术团队分享的文章：</p>
-<p><img src="https://song-oss.oss-cn-beijing.aliyuncs.com/golang_dream/article/static/%E6%88%AA%E5%B1%8F2021-05-29%20%E4%B8%8B%E5%8D%884.32.01.png" alt=""></p>
-<h2 id="用go实现可重入锁">用<code>Go</code>实现可重入锁</h2>
-<p>既然我们想自己实现一个可重入锁，那我们就要了解<code>java</code>中可重入锁是如何实现的，查看了<code>ReentrantLock</code>的源码，大致实现思路如下：</p>
-<p><code>ReentrantLock</code>继承了父类<code>AQS</code>，其父类<code>AQS</code>中维护了一个同步状态<code>status</code>来计数重入次数，<code>status</code>初始值为<code>0</code>，当线程尝试获取锁时，可重入锁先尝试获取并更新<code>status</code>值，如果<code>status == 0</code>表示没有其他线程在执行同步代码，则把<code>status</code>置为<code>1</code>，当前线程开始执行。如果<code>status != 0</code>，则判断当前线程是否是获取到这个锁的线程，如果是的话执行<code>status+1</code>，且当前线程可以再次获取锁。释放锁时，可重入锁同样先获取当前<code>status</code>的值，在当前线程是持有锁的线程的前提下。如果<code>status-1 == 0</code>，则表示当前线程所有重复获取锁的操作都已经执行完毕，然后该线程才会真正释放锁。</p>
-<p>总结一下实现一个可重入锁需要这两点：</p>
-<ul>
-<li>记住持有锁的线程</li>
-<li>统计重入的次数</li>
-</ul>
-<p>统计重入的次数很容易实现，接下来我们考虑一下怎么实现记住持有锁的线程？</p>
-<p>我们都知道<code>Go</code>语言最大的特色就是从语言层面支持并发，<code>Goroutine</code>是<code>Go</code>中最基本的执行单元，每一个<code>Go</code>程序至少有一个<code>Goroutine</code>，主程序也是一个<code>Goroutine</code>，称为主<code>Goroutine</code>，当程序启动时，他会自动创建。每个<code>Goroutine</code>也是有自己唯一的编号，这个编号只有在<code>panic</code>场景下才会看到，<code>Go语言</code>却刻意没有提供获取该编号的接口，官方给出的原因是为了避免滥用。但是我们还是通过一些特殊手段来获取<code>Goroutine ID</code>的，可以使用<code>runtime.Stack</code>函数输出当前栈帧信息，然后解析字符串获取<code>Goroutine ID</code>，具体代码可以参考开源项目 - <a href="https://github.com/petermattis/goid/blob/master/goid.go">goid</a>。</p>
-<p>因为<code>go</code>语言中的<code>Goroutine</code>有<code>Goroutine ID</code>，那么我们就可以通过这个来记住当前的线程，通过这个来判断是否持有锁，就可以了，因此我们可以定义如下结构体：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ReentrantLock</span> <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">lock</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">Mutex</span>
-	<span style="color:#a6e22e">cond</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">Cond</span>
-	<span style="color:#a6e22e">recursion</span> <span style="color:#66d9ef">int32</span>
-	<span style="color:#a6e22e">host</span>     <span style="color:#66d9ef">int64</span>
-}
-</code></pre></div><p>其实就是包装了<code>Mutex</code>锁，使用<code>host</code>字段记录当前持有锁的<code>goroutine id</code>，使用<code>recursion</code>字段记录当前<code>goroutine</code>的重入次数。这里有一个特别要说明的就是<code>sync.Cond</code>，使用<code>Cond</code>的目的是，当多个<code>Goroutine</code>使用相同的可重入锁时，通过<code>cond</code>可以对多个协程进行协调，如果有其他协程正在占用锁，则当前协程进行阻塞，直到其他协程调用释放锁。具体<code>sync.Cond</code>的使用大家可以参考我之前的一篇文章：<a href="https://mp.weixin.qq.com/s/szSxatDakPQMUA8Vm9u3qQ">源码剖析sync.cond(条件变量的实现机制）</a>。</p>
-<ul>
-<li>构造函数</li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewReentrantLock</span>()  <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">Locker</span>{
-	<span style="color:#a6e22e">res</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">ReentrantLock</span>{
-		<span style="color:#a6e22e">lock</span>: new(<span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">Mutex</span>),
-		<span style="color:#a6e22e">recursion</span>: <span style="color:#ae81ff">0</span>,
-		<span style="color:#a6e22e">host</span>: <span style="color:#ae81ff">0</span>,
-	}
-	<span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">cond</span> = <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">NewCond</span>(<span style="color:#a6e22e">res</span>.<span style="color:#a6e22e">lock</span>)
-	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">res</span>
-}
-</code></pre></div><ul>
-<li><code>Lock</code></li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">rt</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ReentrantLock</span>) <span style="color:#a6e22e">Lock</span>()  {
-	<span style="color:#a6e22e">id</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">GetGoroutineID</span>()
-	<span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">lock</span>.<span style="color:#a6e22e">Lock</span>()
-	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">lock</span>.<span style="color:#a6e22e">Unlock</span>()
-
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">host</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">id</span>{
-		<span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">recursion</span><span style="color:#f92672">++</span>
-		<span style="color:#66d9ef">return</span>
-	}
-
-	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">recursion</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>{
-		<span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">cond</span>.<span style="color:#a6e22e">Wait</span>()
-	}
-	<span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">host</span> = <span style="color:#a6e22e">id</span>
-	<span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">recursion</span> = <span style="color:#ae81ff">1</span>
-}
-</code></pre></div><p>这里逻辑比较简单，大概解释一下：</p>
-<p>首先我们获取当前<code>Goroutine</code>的<code>ID</code>，然后我们添加互斥锁锁住当前代码块，保证并发安全，如果当前<code>Goroutine</code>正在占用锁，则增加<code>resutsion</code>的值，记录当前线程加锁的数量，然后返回即可。如果当前<code>Goroutine</code>没有占用锁，则判断当前可重入锁是否被其他<code>Goroutine</code>占用，如果有其他<code>Goroutine</code>正在占用可重入锁，则调用<code>cond.wait</code>方法进行阻塞，直到其他协程释放锁。</p>
-<ul>
-<li><code>Unlock</code></li>
-</ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">rt</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ReentrantLock</span>) <span style="color:#a6e22e">Unlock</span>()  {
-	<span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">lock</span>.<span style="color:#a6e22e">Lock</span>()
-	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">lock</span>.<span style="color:#a6e22e">Unlock</span>()
-
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">recursion</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">host</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">GetGoroutineID</span>() {
-		panic(<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;the wrong call host: (%d); current_id: %d; recursion: %d&#34;</span>, <span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">host</span>,<span style="color:#a6e22e">GetGoroutineID</span>(),<span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">recursion</span>))
-	}
-
-	<span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">recursion</span><span style="color:#f92672">--</span>
-	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">recursion</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>{
-		<span style="color:#a6e22e">rt</span>.<span style="color:#a6e22e">cond</span>.<span style="color:#a6e22e">Signal</span>()
-	}
-}
-</code></pre></div><p>大概解释如下：</p>
-<p>首先我们添加互斥锁锁住当前代码块，保证并发安全，释放可重入锁时，如果非持有锁的<code>Goroutine</code>释放锁则会导致程序出现<code>panic</code>，这个一般是由于用户用法错误导致的。如果当前<code>Goroutine</code>释放了锁，则调用<code>cond.Signal</code>唤醒其他协程。</p>
-<p>测试例子就不在这里贴了，代码已上传<code>github</code>:https://github.com/asong2020/Golang_Dream/tree/master/code_demo/reentrantLock，欢迎star。</p>
-<h2 id="为什么go语言中没有互斥锁">为什么<code>Go</code>语言中没有互斥锁</h2>
-<p>这问题的答案，我在：https://stackoverflow.com/questions/14670979/recursive-locking-in-go#14671462，这里找到了答案。<code>Go</code>语言的发明者认为，如果当你的代码需要重入锁时，那就说明你的代码有问题了，我们正常写代码时，从入口函数开始，执行的层次都是一层层往下的，如果有一个锁需要共享给几个函数，那么就在调用这几个函数的上面，直接加上互斥锁就好了，不需要在每一个函数里面都添加锁，再去释放锁。</p>
-<p>举个例子，假设我们现在一段这样的代码：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">F</span>() {
-	<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
-	<span style="color:#75715e">//... do some stuff ...
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">G</span>()
-	<span style="color:#75715e">//... do some more stuff ...
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Unlock</span>()
-}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">G</span>() {
-	<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
-	<span style="color:#75715e">//... do some stuff ...
-</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Unlock</span>()
-}
-</code></pre></div><p>函数<code>F()</code>和<code>G()</code>使用了相同的互斥锁，并且都在各自函数内部进行了加锁，这要使用就会出现死锁，使用<strong>可重入锁</strong>可以解决这个问题，但是更好的方法是改变我们的代码结构，我们进行分解代码，如下：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">call</span>(){
-  <span style="color:#a6e22e">F</span>()
-  <span style="color:#a6e22e">G</span>()
-}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">F</span>() {
-      <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
-      <span style="color:#f92672">...</span> <span style="color:#a6e22e">do</span> <span style="color:#a6e22e">some</span> <span style="color:#a6e22e">stuff</span>
-      <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Unlock</span>()
-}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">g</span>() {
-     <span style="color:#f92672">...</span> <span style="color:#a6e22e">do</span> <span style="color:#a6e22e">some</span> <span style="color:#a6e22e">stuff</span> <span style="color:#f92672">...</span>
-}
-
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">G</span>() {
-     <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Lock</span>()
-     <span style="color:#a6e22e">g</span>()
-     <span style="color:#a6e22e">mu</span>.<span style="color:#a6e22e">Unlock</span>()
-}
-</code></pre></div><p>这样不仅避免了死锁，而且还对代码进行了解耦。这样的代码按照作用范围进行了分层，就像金字塔一样，上层调用下层的函数，越往上作用范围越大；各层有自己的锁。</p>
-<p>总结：<code>Go</code>语言中完全没有必要使用可重入锁，如果我们发现我们的代码要使用到可重入锁了，那一定是我们写的代码有问题了，请检查代码结构，修改他！！！</p>
-<h2 id="总结">总结</h2>
-<p>这篇文章我们知道了什么是可重入锁，并用<code>Go</code>语言实现了<strong>可重入锁</strong>，大家只需要知道这个概念就好了，实际开发中根本不需要。最后还是建议大家没事多思考一下自己的代码结构，好的代码都是经过深思熟虑的，最后希望大家都能写出漂亮的代码。</p>
-<p><strong>好啦，这篇文章到此结束啦，素质三连（分享、点赞、在看）都是笔者持续创作更多优质内容的动力！我是<code>asong</code>，我们下期见。</strong></p>
-<p><strong>创建了一个Golang学习交流群，欢迎各位大佬们踊跃入群，我们一起学习交流。入群方式：关注公众号获取。更多学习资料请到公众号领取。</strong></p>
-<p><img src="https://song-oss.oss-cn-beijing.aliyuncs.com/golang_dream/article/static/%E6%89%AB%E7%A0%81_%E6%90%9C%E7%B4%A2%E8%81%94%E5%90%88%E4%BC%A0%E6%92%AD%E6%A0%B7%E5%BC%8F-%E6%A0%87%E5%87%86%E8%89%B2%E7%89%88.png" alt=""></p>
-<p>推荐往期文章：</p>
-<ul>
-<li><a href="https://mp.weixin.qq.com/s/nPWvqaQiQ6Z0TaPoqg3t2Q">Go看源码必会知识之unsafe包</a></li>
-<li><a href="https://mp.weixin.qq.com/s/XJ9O9O4KS3LbZL0jYnJHPg">Go语言中new和make你使用哪个来分配内存？</a></li>
-<li><a href="https://mp.weixin.qq.com/s/mzSCWI8C_ByIPbb07XYFTQ">源码剖析panic与recover，看不懂你打我好了！</a></li>
-<li><a href="https://mp.weixin.qq.com/s/dNeCIwmPei2jEWGF6AuWQw">空结构体引发的大型打脸现场</a></li>
-<li><a href="https://mp.weixin.qq.com/s/wURQFRt2ISz66icW7jbHFw">Leaf—Segment分布式ID生成系统（Golang实现版本）</a></li>
-<li><a href="https://mp.weixin.qq.com/s/Dt46eoEXXXZc2ymr67_LVQ">面试官：两个nil比较结果是什么？</a></li>
-<li><a href="https://mp.weixin.qq.com/s/ffEsTpO-tyNZFR5navAbdA">面试官：你能用Go写段代码判断当前系统的存储方式吗?</a></li>
-<li><a href="https://mp.weixin.qq.com/s/8VQxK_Xh-bkVoOdMZs4Ujw">如何平滑切换线上Elasticsearch索引</a></li>
-</ul>
-
-          </section>
-      </p>
-      
-    </section>
-    <footer class="post-meta">
-        
-            <img class="author-thumb" src="https://asong2020.github.io/images/user.png" alt="Author image" nopin="nopin" />
-        
-        
-        
-            
-        
-        on
-            
-                <a href="https://asong2020.github.io/tags/%E9%94%81/">#锁</a>,
-            
-        
-        <time class="post-date" datetime="2021-05-31T00:00:00Z">
-            31 May 2021
-        </time>
-    </footer>
-</article>
-
-	
-
-	<nav class="pagination" role="navigation">
-	
-	<span class="page-number">Page 1 of 1</span>
-	
-</nav>
-
-</main>
-
-
-
-    <footer class="site-footer clearfix">
-        <section class="copyright"><a href="">asong的成长记录小屋</a> </section>
-        
-        <section class="poweredby">Proudly generated by <a class="icon-hugo" href="https://gohugo.io">HUGO</a>, with <a class="icon-theme" href="https://github.com/syui/hugo-theme-air">hugo-theme-air</a> theme</section>
-        
-    </footer>
-    </div>
-    <script type="text/javascript" src="https://asong2020.github.io/js/jquery.js"></script>
-    <script type="text/javascript" src="https://asong2020.github.io/js/jquery.fitvids.js"></script>
-    <script type="text/javascript" src="https://asong2020.github.io/js/index.js"></script>
-    <script src="https://asong2020.github.io/js/particles.min.js"></script>
-    <script src="https://asong2020.github.io/js/particles.js"></script>  
-
-</body>
+  </body>
 </html>
 

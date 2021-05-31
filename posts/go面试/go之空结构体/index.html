@@ -1,97 +1,282 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-  	<meta property="og:title" content=" Go语言空结构体引发的大型打脸现场 &middot;  asong的成长记录小屋" />
-  	<meta property="og:site_name" content="asong的成长记录小屋" />
-  	<meta property="og:url" content="https://asong2020.github.io/posts/go%E9%9D%A2%E8%AF%95/go%E4%B9%8B%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93/" />
+  <head>
     
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.80.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="asong">
+<meta name="keywords" content="结构体, asong, go, golang">
+<meta name="description" content="背景 哈喽，大家好，我是正在学习PS技术的asong，上周读者问了我一道题，觉得挺有意义的，就在这里分享一下，我们先来看一下这个题：
+type User struct { } func FPrint(u User) { fmt.Printf(&#34;FPrint %p\n&#34;, &amp;u) } func main() { u := User{} FPrint(u) fmt.Printf(&#34;main: %p\n&#34;, &amp;u) } // 运行结果 FPrint 0x118eff0 main: 0x118eff0 看了运行结果，大多数朋友应该和我一样，一脸懵逼？Go语言不是只有值传递嘛？之前我还写过一篇关于&quot;Go语言参数传递是传值还是传引用吗？&quot;，已经得出明确的结论，Go语言的确是只有值传递，这不是打脸了嘛。。。
+既然已经出现了这样的结果，那么就要给出一个合理的解释，不要再让气氛尴尬下去，于是我给出了我的猜想，如下：
+ 猜想一：这是一个bug 猜想二：结构体的特殊特性导致的  猜想一有点天马行空的感觉，暂时也无法验证，所以我们先来验证猜想二，请开始我的表演，都坐下，我要装逼了。。。。
+验证猜想二：结构体的特殊特性导致的 上面的那道题中传参是一个空结构体，如果改成一个带字段的结构体会是什么样呢？我们来看一下：
+type UserIsEmpty struct { } type UserHasField struct { Age uint64 `json:&#34;age&#34;` } func FPrint(uIsEmpty UserIsEmpty, uHasField UserHasField) { fmt.">
+
+
+<meta property="og:description" content="背景 哈喽，大家好，我是正在学习PS技术的asong，上周读者问了我一道题，觉得挺有意义的，就在这里分享一下，我们先来看一下这个题：
+type User struct { } func FPrint(u User) { fmt.Printf(&#34;FPrint %p\n&#34;, &amp;u) } func main() { u := User{} FPrint(u) fmt.Printf(&#34;main: %p\n&#34;, &amp;u) } // 运行结果 FPrint 0x118eff0 main: 0x118eff0 看了运行结果，大多数朋友应该和我一样，一脸懵逼？Go语言不是只有值传递嘛？之前我还写过一篇关于&quot;Go语言参数传递是传值还是传引用吗？&quot;，已经得出明确的结论，Go语言的确是只有值传递，这不是打脸了嘛。。。
+既然已经出现了这样的结果，那么就要给出一个合理的解释，不要再让气氛尴尬下去，于是我给出了我的猜想，如下：
+ 猜想一：这是一个bug 猜想二：结构体的特殊特性导致的  猜想一有点天马行空的感觉，暂时也无法验证，所以我们先来验证猜想二，请开始我的表演，都坐下，我要装逼了。。。。
+验证猜想二：结构体的特殊特性导致的 上面的那道题中传参是一个空结构体，如果改成一个带字段的结构体会是什么样呢？我们来看一下：
+type UserIsEmpty struct { } type UserHasField struct { Age uint64 `json:&#34;age&#34;` } func FPrint(uIsEmpty UserIsEmpty, uHasField UserHasField) { fmt.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go语言空结构体引发的大型打脸现场">
+<meta name="twitter:title" content="Go语言空结构体引发的大型打脸现场">
+<meta property="og:url" content="https://asong2020.github.io/posts/go%E9%9D%A2%E8%AF%95/go%E4%B9%8B%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93/">
+<meta property="twitter:url" content="https://asong2020.github.io/posts/go%E9%9D%A2%E8%AF%95/go%E4%B9%8B%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93/">
+<meta property="og:site_name" content="asong的成长记录小屋">
+<meta property="og:description" content="背景 哈喽，大家好，我是正在学习PS技术的asong，上周读者问了我一道题，觉得挺有意义的，就在这里分享一下，我们先来看一下这个题：
+type User struct { } func FPrint(u User) { fmt.Printf(&#34;FPrint %p\n&#34;, &amp;u) } func main() { u := User{} FPrint(u) fmt.Printf(&#34;main: %p\n&#34;, &amp;u) } // 运行结果 FPrint 0x118eff0 main: 0x118eff0 看了运行结果，大多数朋友应该和我一样，一脸懵逼？Go语言不是只有值传递嘛？之前我还写过一篇关于&quot;Go语言参数传递是传值还是传引用吗？&quot;，已经得出明确的结论，Go语言的确是只有值传递，这不是打脸了嘛。。。
+既然已经出现了这样的结果，那么就要给出一个合理的解释，不要再让气氛尴尬下去，于是我给出了我的猜想，如下：
+ 猜想一：这是一个bug 猜想二：结构体的特殊特性导致的  猜想一有点天马行空的感觉，暂时也无法验证，所以我们先来验证猜想二，请开始我的表演，都坐下，我要装逼了。。。。
+验证猜想二：结构体的特殊特性导致的 上面的那道题中传参是一个空结构体，如果改成一个带字段的结构体会是什么样呢？我们来看一下：
+type UserIsEmpty struct { } type UserHasField struct { Age uint64 `json:&#34;age&#34;` } func FPrint(uIsEmpty UserIsEmpty, uHasField UserHasField) { fmt.">
+<meta name="twitter:description" content="背景 哈喽，大家好，我是正在学习PS技术的asong，上周读者问了我一道题，觉得挺有意义的，就在这里分享一下，我们先来看一下这个题：
+type User struct { } func FPrint(u User) { fmt.Printf(&#34;FPrint %p\n&#34;, &amp;u) } func main() { u := User{} FPrint(u) fmt.Printf(&#34;main: %p\n&#34;, &amp;u) } // 运行结果 FPrint 0x118eff0 main: 0x118eff0 看了运行结果，大多数朋友应该和我一样，一脸懵逼？Go语言不是只有值传递嘛？之前我还写过一篇关于&quot;Go语言参数传递是传值还是传引用吗？&quot;，已经得出明确的结论，Go语言的确是只有值传递，这不是打脸了嘛。。。
+既然已经出现了这样的结果，那么就要给出一个合理的解释，不要再让气氛尴尬下去，于是我给出了我的猜想，如下：
+ 猜想一：这是一个bug 猜想二：结构体的特殊特性导致的  猜想一有点天马行空的感觉，暂时也无法验证，所以我们先来验证猜想二，请开始我的表演，都坐下，我要装逼了。。。。
+验证猜想二：结构体的特殊特性导致的 上面的那道题中传参是一个空结构体，如果改成一个带字段的结构体会是什么样呢？我们来看一下：
+type UserIsEmpty struct { } type UserHasField struct { Age uint64 `json:&#34;age&#34;` } func FPrint(uIsEmpty UserIsEmpty, uHasField UserHasField) { fmt.">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-05-20T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-05-20T00:00:00">
+  
+  
+  
     
-  	<meta property="og:type" content="article" />
-
-    <meta property="og:article:published_time" content="2021-05-20T00:00:00Z" />
-
+      <meta property="article:section" content="Go面试">
     
-    <meta property="og:article:tag" content="结构体" />
+  
+  
     
+      <meta property="article:tag" content="结构体">
     
-
-  <title>
-     Go语言空结构体引发的大型打脸现场 &middot;  asong的成长记录小屋
-  </title>
-
-    <meta name="description" content="this is my description" />
-
-    <meta name="HandheldFriendly" content="True" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <link rel="shortcut icon" href="https://asong2020.github.io/images/favicon.ico">
-	  <link rel="apple-touch-icon" href="https://asong2020.github.io/images/apple-touch-icon.png" />
-    
-    <link rel="stylesheet" type="text/css" href="https://asong2020.github.io/css/screen.css" />
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400|Inconsolata" />
-
-
-    
-      
-          <link href="https://asong2020.github.io/index.xml" rel="alternate" type="application/rss+xml" title="asong的成长记录小屋" />
-      
-      
-    
-    <meta name="generator" content="Hugo 0.80.0" />
-
-    <link rel="canonical" href="https://asong2020.github.io/posts/go%E9%9D%A2%E8%AF%95/go%E4%B9%8B%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93/" />
-
-     
-</head>
-<body class="nav-closed">
-<div id="particles-js"></div>
   
 
 
- <div class="site-wrapper">
+<meta name="twitter:card" content="summary">
 
 
 
-<header class="main-header " style="background-image: url(https://asong2020.github.io/images/user.jpg)">
 
-    <nav class="main-nav overlay clearfix">
-        
-            <a class="blog-logo" href="https://asong2020.github.io/"><img src="https://asong2020.github.io/images/user.png" alt="Blog Logo" /></a>
-        
-        
-    </nav>
-<div class="vertical">
-        <div class="main-header-content inner">
-            <h1 class="page-title">
-              <a class="btn-bootstrap-2" href="#content">asong的成长记录小屋</a>
-          </h1>
-          <h2 class="page-description">this is my description</h2>
-        </div>
-</div>
-    <a class="scroll-down icon-arrow-left" href="#content"><span class="hidden">Scroll Down</span></a>
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=640">
+  <meta property="twitter:image" content="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=640">
+
+
+    <title>Go语言空结构体引发的大型打脸现场</title>
+
+    <link rel="icon" href="https://asong2020.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://asong2020.github.io/posts/go%E9%9D%A2%E8%AF%95/go%E4%B9%8B%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://asong2020.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="1">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://asong2020.github.io/">asong的成长记录小屋</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://asong2020.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=90" alt="作者的图片" />
+      
+    
+    </a>
+  
 </header>
 
-  <main id="content" class="content" role="main">
-
-
-  <article class="post posts">
-
-    <header class="post-header">
-        <h1 class="post-title">Go语言空结构体引发的大型打脸现场</h1>
-        <section class="post-meta">
+      <nav id="sidebar" data-behavior="1">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://asong2020.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=110" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">asong</h4>
         
-         
-          <span class="post-tag small"><a href="https://asong2020.github.io/tags/%E7%BB%93%E6%9E%84%E4%BD%93/">#结构体</a></span>
-         
-        </section>
-    </header>
+          <h5 class="sidebar-profile-bio">欢迎关注公众号：<strong>Golang梦工厂</strong></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
 
-    <section class="post-content">
-      <h2 id="背景">背景</h2>
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link open-algolia-search" href="https://asong2020.github.io/#search">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-search"></i>
+      
+      <span class="sidebar-button-desc">搜索</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/asong2020" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="1"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      Go语言空结构体引发的大型打脸现场
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-05-20T00:00:00Z">
+        
+  
+  
+  
+  
+    20 五月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://asong2020.github.io/categories/go%e9%9d%a2%e8%af%95">Go面试</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h2 id="背景">背景</h2>
 <p>哈喽，大家好，我是正在学习<code>PS</code>技术的<code>asong</code>，上周读者问了我一道题，觉得挺有意义的，就在这里分享一下，我们先来看一下这个题：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">User</span> <span style="color:#66d9ef">struct</span> {
 }
@@ -222,66 +407,231 @@
 <li><a href="https://mp.weixin.qq.com/s/G7z80u83LTgLyfHgzgrd9g">面试官：go中for-range使用过吗？这几个问题你能解释一下原因吗</a></li>
 </ul>
 
-    </section>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://asong2020.github.io/tags/%E7%BB%93%E6%9E%84%E4%BD%93/">结构体</a>
 
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/posts/go%E5%BA%94%E7%94%A8/go%E5%AE%9E%E7%8E%B0%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81/" data-tooltip="Go语言如何实现可重入锁">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
 
-  <footer class="post-footer">
+            
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 asong. All Rights Reserved
+  </span>
+</footer>
 
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="1">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/posts/go%E5%BA%94%E7%94%A8/go%E5%AE%9E%E7%8E%B0%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81/" data-tooltip="Go语言如何实现可重入锁">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="1">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=110" alt="作者的图片" />
+    
+    <h4 id="about-card-name">asong</h4>
+    
+      <div id="about-card-bio">欢迎关注公众号：<strong>Golang梦工厂</strong></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        后端开发工程师
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        深圳
+      </div>
+    
+  </div>
+</div>
 
     
-    <figure class="author-image">
 
-        <a class="img" href="https://asong2020.github.io/" style="background-image: url(https://asong2020.github.io/images/user.png)"><span class="hidden">syui</span></a>
-    </figure>
     
-
-    <section class="author">
-
-  <p>syui</p>
+  
+    
+      <div id="cover" style="background-image:url('https://asong2020.github.io/images/cover.jpg');"></div>
+    
   
 
-</section>
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://asong2020.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+  
+
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      CommonHTML: { linebreaks: { automatic: true } },
+      tex2jax: { inlineMath: [ ['$', '$'], ['\\(','\\)'] ], displayMath: [ ['$$','$$'], ['\\[', '\\]'] ], processEscapes: false },
+      messageStyle: 'none'
+    });
+  </script>
+
 
 
     
-    <section class="share">
-      <h4>Share this posts</h4>
-      <a class="icon-twitter" style="font-size: 1.4em" href="https://twitter.com/share?text=Go%e8%af%ad%e8%a8%80%e7%a9%ba%e7%bb%93%e6%9e%84%e4%bd%93%e5%bc%95%e5%8f%91%e7%9a%84%e5%a4%a7%e5%9e%8b%e6%89%93%e8%84%b8%e7%8e%b0%e5%9c%ba&amp;url=https%3a%2f%2fasong2020.github.io%2fposts%2fgo%25E9%259D%25A2%25E8%25AF%2595%2fgo%25E4%25B9%258B%25E7%25A9%25BA%25E7%25BB%2593%25E6%259E%2584%25E4%25BD%2593%2f"
-          onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
-          <span class="hidden">Twitter</span>
-      </a>
-      <a class="icon-facebook" style="font-size: 1.4em" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fasong2020.github.io%2fposts%2fgo%25E9%259D%25A2%25E8%25AF%2595%2fgo%25E4%25B9%258B%25E7%25A9%25BA%25E7%25BB%2593%25E6%259E%2584%25E4%25BD%2593%2f"
-          onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
-          <span class="hidden">Facebook</span>
-      </a>
-      <a class="icon-google-plus" style="font-size: 1.4em" href="https://plus.google.com/share?url=https%3a%2f%2fasong2020.github.io%2fposts%2fgo%25E9%259D%25A2%25E8%25AF%2595%2fgo%25E4%25B9%258B%25E7%25A9%25BA%25E7%25BB%2593%25E6%259E%2584%25E4%25BD%2593%2f"
-         onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
-          <span class="hidden">Google+</span>
-      </a>
-    </section>
-    
-
-    
-    
-    
-
-  </footer>
-</article>
-
-</main>
-    <footer class="site-footer clearfix">
-        <section class="copyright"><a href="">asong的成长记录小屋</a> </section>
-        
-        <section class="poweredby">Proudly generated by <a class="icon-hugo" href="https://gohugo.io">HUGO</a>, with <a class="icon-theme" href="https://github.com/syui/hugo-theme-air">hugo-theme-air</a> theme</section>
-        
-    </footer>
-    </div>
-    <script type="text/javascript" src="https://asong2020.github.io/js/jquery.js"></script>
-    <script type="text/javascript" src="https://asong2020.github.io/js/jquery.fitvids.js"></script>
-    <script type="text/javascript" src="https://asong2020.github.io/js/index.js"></script>
-    <script src="https://asong2020.github.io/js/particles.min.js"></script>
-    <script src="https://asong2020.github.io/js/particles.js"></script>  
-
-</body>
+  </body>
 </html>
 
