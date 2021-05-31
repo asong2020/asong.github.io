@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on asong的成长记录小屋</title>
-    <link>https://asong2020.github.io/posts/</link>
-    <description>Recent content in Posts on asong的成长记录小屋</description>
+    <title>Go应用 on asong的成长记录小屋</title>
+    <link>https://asong2020.github.io/categories/go%E5%BA%94%E7%94%A8/</link>
+    <description>Recent content in Go应用 on asong的成长记录小屋</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 31 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://asong2020.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 31 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://asong2020.github.io/categories/go%E5%BA%94%E7%94%A8/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go语言如何实现可重入锁</title>
       <link>https://asong2020.github.io/posts/go%E5%BA%94%E7%94%A8/go%E5%AE%9E%E7%8E%B0%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81/</link>
@@ -27,20 +27,6 @@ ReentrantLock继承了父类AQS，其父类AQS中维护了一个同步状态stat
 因为go语言中的Goroutine有Goroutine ID，那么我们就可以通过这个来记住当前的线程，通过这个来判断是否持有锁，就可以了，因此我们可以定义如下结构体：
 type ReentrantLock struct { lock *sync.Mutex cond *sync.Cond recursion int32 host int64 } 其实就是包装了Mutex锁，使用host字段记录当前持有锁的goroutine id，使用recursion字段记录当前goroutine的重入次数。这里有一个特别要说明的就是sync.Cond，使用Cond的目的是，当多个Goroutine使用相同的可重入锁时，通过cond可以对多个协程进行协调，如果有其他协程正在占用锁，则当前协程进行阻塞，直到其他协程调用释放锁。具体sync.Cond的使用大家可以参考我之前的一篇文章：源码剖析sync.cond(条件变量的实现机制）。
  构造函数  func NewReentrantLock() sync.</description>
-    </item>
-    
-    <item>
-      <title>Go语言空结构体引发的大型打脸现场</title>
-      <link>https://asong2020.github.io/posts/go%E9%9D%A2%E8%AF%95/go%E4%B9%8B%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93/</link>
-      <pubDate>Thu, 20 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://asong2020.github.io/posts/go%E9%9D%A2%E8%AF%95/go%E4%B9%8B%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93/</guid>
-      <description>背景 哈喽，大家好，我是正在学习PS技术的asong，上周读者问了我一道题，觉得挺有意义的，就在这里分享一下，我们先来看一下这个题：
-type User struct { } func FPrint(u User) { fmt.Printf(&amp;#34;FPrint %p\n&amp;#34;, &amp;amp;u) } func main() { u := User{} FPrint(u) fmt.Printf(&amp;#34;main: %p\n&amp;#34;, &amp;amp;u) } // 运行结果 FPrint 0x118eff0 main: 0x118eff0 看了运行结果，大多数朋友应该和我一样，一脸懵逼？Go语言不是只有值传递嘛？之前我还写过一篇关于&amp;quot;Go语言参数传递是传值还是传引用吗？&amp;quot;，已经得出明确的结论，Go语言的确是只有值传递，这不是打脸了嘛。。。
-既然已经出现了这样的结果，那么就要给出一个合理的解释，不要再让气氛尴尬下去，于是我给出了我的猜想，如下：
- 猜想一：这是一个bug 猜想二：结构体的特殊特性导致的  猜想一有点天马行空的感觉，暂时也无法验证，所以我们先来验证猜想二，请开始我的表演，都坐下，我要装逼了。。。。
-验证猜想二：结构体的特殊特性导致的 上面的那道题中传参是一个空结构体，如果改成一个带字段的结构体会是什么样呢？我们来看一下：
-type UserIsEmpty struct { } type UserHasField struct { Age uint64 `json:&amp;#34;age&amp;#34;` } func FPrint(uIsEmpty UserIsEmpty, uHasField UserHasField) { fmt.</description>
     </item>
     
   </channel>
