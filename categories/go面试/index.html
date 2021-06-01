@@ -35,8 +35,8 @@
 
 
 
-  <meta property="og:image" content="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=640">
-  <meta property="twitter:image" content="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=640">
+  <meta property="og:image" content="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg">
+  <meta property="twitter:image" content="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg">
 
 
     <title>Go面试</title>
@@ -81,7 +81,7 @@
     
     
       
-        <img class="header-picture" src="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=90" alt="作者的图片" />
+        <img class="header-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
       
     
     </a>
@@ -93,7 +93,7 @@
     
       <div class="sidebar-profile">
         <a href="https://asong2020.github.io/#about">
-          <img class="sidebar-profile-picture" src="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=110" alt="作者的图片" />
+          <img class="sidebar-profile-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
         </a>
         <h4 class="sidebar-profile-name">asong</h4>
         
@@ -125,16 +125,6 @@
 
   <li class="sidebar-button">
     
-      <a class="sidebar-button-link " href="https://asong2020.github.io/posts">
-    
-      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-      
-      <span class="sidebar-button-desc">归档</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
       <a class="sidebar-button-link " href="https://asong2020.github.io/#about">
     
       <i class="sidebar-button-icon fa fa-lg fa-question"></i>
@@ -145,17 +135,7 @@
 
   <li class="sidebar-button">
     
-      <a class="sidebar-button-link open-algolia-search" href="https://asong2020.github.io/#search">
-    
-      <i class="sidebar-button-icon fa fa-lg fa-search"></i>
-      
-      <span class="sidebar-button-desc">搜索</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://asong2020.github.io/">
+      <a class="sidebar-button-link " href="https://asong2020.github.io/post">
     
       <i class="sidebar-button-icon fa fa-lg fa-home"></i>
       
@@ -208,6 +188,67 @@
           <section class="postShorten-group main-content-wrap">
             
             
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-right" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://asong2020.github.io/2021/05/go%E8%AF%AD%E8%A8%80%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93%E5%BC%95%E5%8F%91%E7%9A%84%E5%A4%A7%E5%9E%8B%E6%89%93%E8%84%B8%E7%8E%B0%E5%9C%BA/">
+          Go语言空结构体引发的大型打脸现场
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-05-20T00:00:00Z">
+        
+  
+  
+  
+  
+    20 五月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://asong2020.github.io/categories/go%e9%9d%a2%e8%af%95">Go面试</a>
+    
+  
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      
+        背景 哈喽，大家好，我是正在学习PS技术的asong，上周读者问了我一道题，觉得挺有意义的，就在这里分享一下，我们先来看一下这个题： type User struct { } func FPrint(u User) { fmt.Printf(&#34;FPrint %p\n&#34;, &amp;u) } func main() { u := User{} FPrint(u) fmt.Printf(&#34;main: %p\n&#34;, &amp;u) } // 运行结果 FPrint 0x118eff0 main: 0x118eff0 看了运行结果，大多数朋友应该和我一样，一脸懵逼？Go语言不是只有值传递嘛？之前我还写过一篇关于&quot;Go语言参数传递是传值还是传引用吗？&quot;，已经得出
+      
+      <p>
+        <a href="https://asong2020.github.io/2021/05/go%E8%AF%AD%E8%A8%80%E7%A9%BA%E7%BB%93%E6%9E%84%E4%BD%93%E5%BC%95%E5%8F%91%E7%9A%84%E5%A4%A7%E5%9E%8B%E6%89%93%E8%84%B8%E7%8E%B0%E5%9C%BA/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
             
 
           </section>
@@ -227,7 +268,7 @@
       <i class="fa fa-remove"></i>
     </div>
     
-      <img id="about-card-picture" src="https://www.gravatar.com/avatar/476ba056f13e6fb7ffb2c7705509ab60?s=110" alt="作者的图片" />
+      <img id="about-card-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
     
     <h4 id="about-card-name">asong</h4>
     
