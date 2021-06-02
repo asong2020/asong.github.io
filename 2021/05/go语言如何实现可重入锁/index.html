@@ -319,7 +319,7 @@
 </code></pre></div><p>大概解释如下：</p>
 <p>首先我们添加互斥锁锁住当前代码块，保证并发安全，释放可重入锁时，如果非持有锁的<code>Goroutine</code>释放锁则会导致程序出现<code>panic</code>，这个一般是由于用户用法错误导致的。如果当前<code>Goroutine</code>释放了锁，则调用<code>cond.Signal</code>唤醒其他协程。</p>
 <p>测试例子就不在这里贴了，代码已上传<code>github</code>:https://github.com/asong2020/Golang_Dream/tree/master/code_demo/reentrantLock，欢迎star。</p>
-<h2 id="为什么go语言中没有互斥锁">为什么<code>Go</code>语言中没有互斥锁</h2>
+<h2 id="为什么go语言中没有可重入锁">为什么<code>Go</code>语言中没有可重入锁</h2>
 <p>这问题的答案，我在：https://stackoverflow.com/questions/14670979/recursive-locking-in-go#14671462，这里找到了答案。<code>Go</code>语言的发明者认为，如果当你的代码需要重入锁时，那就说明你的代码有问题了，我们正常写代码时，从入口函数开始，执行的层次都是一层层往下的，如果有一个锁需要共享给几个函数，那么就在调用这几个函数的上面，直接加上互斥锁就好了，不需要在每一个函数里面都添加锁，再去释放锁。</p>
 <p>举个例子，假设我们现在一段这样的代码：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">F</span>() {
