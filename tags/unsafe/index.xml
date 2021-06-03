@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>unsafe on asong的成长记录小屋</title>
+    <link>https://asong2020.github.io/tags/unsafe/</link>
+    <description>Recent content in unsafe on asong的成长记录小屋</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 10 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://asong2020.github.io/tags/unsafe/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go语言标准库unsafe包源码解析</title>
+      <link>https://asong2020.github.io/2021/03/go%E8%AF%AD%E8%A8%80%E6%A0%87%E5%87%86%E5%BA%93unsafe%E5%8C%85%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</link>
+      <pubDate>Wed, 10 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://asong2020.github.io/2021/03/go%E8%AF%AD%E8%A8%80%E6%A0%87%E5%87%86%E5%BA%93unsafe%E5%8C%85%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</guid>
+      <description>前言 有看源码的朋友应该会发现，Go标准库中大量使用了unsafe.pointer，要想更好的理解源码实现，就要知道unsafe.pointer到底是什么？所以今天就与大家来聊一聊unsafe包。 什么是unsafe 众所周知，Go语言被设计成一门强类型的静态语言，那么他的类型就不能改变了，静态也是意味着类型检查在运行前就做了。所以在Go语言中是不允许两个指针类型</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ElasticSearch on asong的成长记录小屋</title>
+    <link>https://asong2020.github.io/tags/elasticsearch/</link>
+    <description>Recent content in ElasticSearch on asong的成长记录小屋</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 10 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://asong2020.github.io/tags/elasticsearch/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>如何平滑切换线上的ElasticSearch索引</title>
+      <link>https://asong2020.github.io/2021/04/%E5%A6%82%E4%BD%95%E5%B9%B3%E6%BB%91%E5%88%87%E6%8D%A2%E7%BA%BF%E4%B8%8A%E7%9A%84elasticsearch%E7%B4%A2%E5%BC%95/</link>
+      <pubDate>Sat, 10 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://asong2020.github.io/2021/04/%E5%A6%82%E4%BD%95%E5%B9%B3%E6%BB%91%E5%88%87%E6%8D%A2%E7%BA%BF%E4%B8%8A%E7%9A%84elasticsearch%E7%B4%A2%E5%BC%95/</guid>
+      <description>前言 哈喽，大家好，我是asong，今天与大家聊一聊如何平滑切换线上的ES索引。使用过ES的朋友们都知道，修改索引真的是一件费时又费力的工作，所以我们应该在创建索引的时候就尽量设计好索引能够满足需求，当然这几乎是不可能的，毕竟存在着万恶的产品经理，所以掌握&amp;quot;平滑切换线上的ES索引&amp;quot;就很必要，接下来我们就来看一看如何实现！ 前置条件 能够平滑切换</description>
+    </item>
+    
+  </channel>
+</rss>

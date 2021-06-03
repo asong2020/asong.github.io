@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Go源码 on asong的成长记录小屋</title>
+    <link>https://asong2020.github.io/categories/go%E6%BA%90%E7%A0%81/</link>
+    <description>Recent content in Go源码 on asong的成长记录小屋</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 18 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://asong2020.github.io/categories/go%E6%BA%90%E7%A0%81/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go语言中interface的类型断言实现原理及性能分析</title>
+      <link>https://asong2020.github.io/2021/04/go%E8%AF%AD%E8%A8%80%E4%B8%ADinterface%E7%9A%84%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%8F%8A%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/</link>
+      <pubDate>Sun, 18 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://asong2020.github.io/2021/04/go%E8%AF%AD%E8%A8%80%E4%B8%ADinterface%E7%9A%84%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%8F%8A%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/</guid>
+      <description>前言 哈喽，everyBody，我是asong，今天我们一起来探索一下interface的类型断言是如何实现的。我们通常使用interface有两种方式，一种是带方法的interface，一种是空的interface。因为Go中是没有泛型，所以我们可以用空的interface{}来作为一种伪泛型使用，当我们使用到空的interface{}作为入参或返回值时，就</description>
+    </item>
+    
+    <item>
+      <title>Go语言标准库unsafe包源码解析</title>
+      <link>https://asong2020.github.io/2021/03/go%E8%AF%AD%E8%A8%80%E6%A0%87%E5%87%86%E5%BA%93unsafe%E5%8C%85%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</link>
+      <pubDate>Wed, 10 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://asong2020.github.io/2021/03/go%E8%AF%AD%E8%A8%80%E6%A0%87%E5%87%86%E5%BA%93unsafe%E5%8C%85%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</guid>
+      <description>前言 有看源码的朋友应该会发现，Go标准库中大量使用了unsafe.pointer，要想更好的理解源码实现，就要知道unsafe.pointer到底是什么？所以今天就与大家来聊一聊unsafe包。 什么是unsafe 众所周知，Go语言被设计成一门强类型的静态语言，那么他的类型就不能改变了，静态也是意味着类型检查在运行前就做了。所以在Go语言中是不允许两个指针类型</description>
+    </item>
+    
+    <item>
+      <title>Go语言并发编程之sync.waitGroup的源码解析</title>
+      <link>https://asong2020.github.io/2021/02/go%E8%AF%AD%E8%A8%80%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E4%B9%8Bsync.waitgroup%E7%9A%84%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</link>
+      <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://asong2020.github.io/2021/02/go%E8%AF%AD%E8%A8%80%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E4%B9%8Bsync.waitgroup%E7%9A%84%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/</guid>
+      <description>前言 哈喽，大家好，我是asong，这是我并发编程系列的第三篇文章，上一篇我们一起分析了sync.once的使用与实现，今天我们一起来看一看sync.WaitGroup的使用与实现. 快过年了，这是年前最后一篇推文了，待我积累一下，年后加大力度写干货，在这里先预祝大家新春快乐，身体健康，万事如意！ 什么是sync.WaitGroup 官方文档对sync.WatiGr</description>
+    </item>
+    
+  </channel>
+</rss>

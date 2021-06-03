@@ -13,10 +13,10 @@
 
 <meta property="og:description" content="">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Go应用">
-<meta name="twitter:title" content="Go应用">
-<meta property="og:url" content="https://asong2020.github.io/categories/go%E5%BA%94%E7%94%A8/">
-<meta property="twitter:url" content="https://asong2020.github.io/categories/go%E5%BA%94%E7%94%A8/">
+<meta property="og:title" content="Go源码">
+<meta name="twitter:title" content="Go源码">
+<meta property="og:url" content="https://asong2020.github.io/categories/go%E6%BA%90%E7%A0%81/">
+<meta property="twitter:url" content="https://asong2020.github.io/categories/go%E6%BA%90%E7%A0%81/">
 <meta property="og:site_name" content="asong的成长记录小屋">
 <meta property="og:description" content="">
 <meta name="twitter:description" content="">
@@ -39,16 +39,16 @@
   <meta property="twitter:image" content="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg">
 
 
-    <title>Go应用</title>
+    <title>Go源码</title>
 
     <link rel="icon" href="https://asong2020.github.io/favicon.png">
     
-      <link rel="alternate" type="application/rss+xml" title="RSS" href="https://asong2020.github.io/categories/go%E5%BA%94%E7%94%A8/index.xml">
+      <link rel="alternate" type="application/rss+xml" title="RSS" href="https://asong2020.github.io/categories/go%E6%BA%90%E7%A0%81/index.xml">
     
 
     
 
-    <link rel="canonical" href="https://asong2020.github.io/categories/go%E5%BA%94%E7%94%A8/">
+    <link rel="canonical" href="https://asong2020.github.io/categories/go%E6%BA%90%E7%A0%81/">
 
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
@@ -195,20 +195,20 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://asong2020.github.io/2021/05/go%E8%AF%AD%E8%A8%80%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81/">
-          Go语言如何实现可重入锁
+        <a class="link-unstyled" href="https://asong2020.github.io/2021/04/go%E8%AF%AD%E8%A8%80%E4%B8%ADinterface%E7%9A%84%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%8F%8A%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/">
+          Go语言中interface的类型断言实现原理及性能分析
         </a>
       </h1>
       
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2021-05-31T00:00:00Z">
+      <time itemprop="datePublished" datetime="2021-04-18T00:00:00Z">
         
   
   
   
   
-    31 五月 2021
+    18 四月 2021
   
 
       </time>
@@ -218,7 +218,7 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://asong2020.github.io/categories/go%e5%ba%94%e7%94%a8">Go应用</a>
+      <a class="category-link" href="https://asong2020.github.io/categories/go%e6%ba%90%e7%a0%81">Go源码</a>
     
   
 
@@ -227,10 +227,132 @@
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
       
-        前言 哈喽，大家好，我是asong。前几天一个读者问我如何使用Go语言实现可重入锁，突然想到Go语言中好像没有这个概念，平常在业务开发中也没有要用到可重入锁的概念，一时懵住了。之前在写java的时候，就会使用到可重入锁，然而写了这么久的Go，却没有使用过，这是怎么回事呢？这一篇文章就带你来解密～ 什么是可重入锁 之前写过java的同学对这个概念应该了如指掌，可重入
+        前言 哈喽，everyBody，我是asong，今天我们一起来探索一下interface的类型断言是如何实现的。我们通常使用interface有两种方式，一种是带方法的interface，一种是空的interface。因为Go中是没有泛型，所以我们可以用空的interface{}来作为一种伪泛型使用，当我们使用到空的interface{}作为入参或返回值时，就
       
       <p>
-        <a href="https://asong2020.github.io/2021/05/go%E8%AF%AD%E8%A8%80%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81/" class="postShorten-excerpt_link link">阅读全文</a>
+        <a href="https://asong2020.github.io/2021/04/go%E8%AF%AD%E8%A8%80%E4%B8%ADinterface%E7%9A%84%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%8F%8A%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-right" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://asong2020.github.io/2021/03/go%E8%AF%AD%E8%A8%80%E6%A0%87%E5%87%86%E5%BA%93unsafe%E5%8C%85%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+          Go语言标准库unsafe包源码解析
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-03-10T00:00:00Z">
+        
+  
+  
+  
+  
+    10 三月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://asong2020.github.io/categories/go%e6%ba%90%e7%a0%81">Go源码</a>
+    
+  
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      
+        前言 有看源码的朋友应该会发现，Go标准库中大量使用了unsafe.pointer，要想更好的理解源码实现，就要知道unsafe.pointer到底是什么？所以今天就与大家来聊一聊unsafe包。 什么是unsafe 众所周知，Go语言被设计成一门强类型的静态语言，那么他的类型就不能改变了，静态也是意味着类型检查在运行前就做了。所以在Go语言中是不允许两个指针类型
+      
+      <p>
+        <a href="https://asong2020.github.io/2021/03/go%E8%AF%AD%E8%A8%80%E6%A0%87%E5%87%86%E5%BA%93unsafe%E5%8C%85%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-right" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://asong2020.github.io/2021/02/go%E8%AF%AD%E8%A8%80%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E4%B9%8Bsync.waitgroup%E7%9A%84%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+          Go语言并发编程之sync.waitGroup的源码解析
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-02-10T00:00:00Z">
+        
+  
+  
+  
+  
+    10 二月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://asong2020.github.io/categories/go%e6%ba%90%e7%a0%81">Go源码</a>
+    
+  
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      
+        前言 哈喽，大家好，我是asong，这是我并发编程系列的第三篇文章，上一篇我们一起分析了sync.once的使用与实现，今天我们一起来看一看sync.WaitGroup的使用与实现. 快过年了，这是年前最后一篇推文了，待我积累一下，年后加大力度写干货，在这里先预祝大家新春快乐，身体健康，万事如意！ 什么是sync.WaitGroup 官方文档对sync.WatiGr
+      
+      <p>
+        <a href="https://asong2020.github.io/2021/02/go%E8%AF%AD%E8%A8%80%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E4%B9%8Bsync.waitgroup%E7%9A%84%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="postShorten-excerpt_link link">阅读全文</a>
         
       </p>
     </div>

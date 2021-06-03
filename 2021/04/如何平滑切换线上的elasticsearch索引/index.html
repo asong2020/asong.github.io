@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.80.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="asong">
+<meta name="keywords" content="ES, ElasticSearch, 如何平滑的进行索引切换, 别名索引, asong, go, golang">
+<meta name="description" content="前言 哈喽，大家好，我是asong，今天与大家聊一聊如何平滑切换线上的ES索引。使用过ES的朋友们都知道，修改索引真的是一件费时又费力的工作，所以我们应该在创建索引的时候就尽量设计好索引能够满足需求，当然这几乎是不可能的，毕竟存在着万恶的产品经理，所以掌握&quot;平滑切换线上的ES索引&quot;就很必要，接下来我们就来看一看如何实现！ 前置条件 能够平滑切换">
+
+
+<meta property="og:description" content="前言 哈喽，大家好，我是asong，今天与大家聊一聊如何平滑切换线上的ES索引。使用过ES的朋友们都知道，修改索引真的是一件费时又费力的工作，所以我们应该在创建索引的时候就尽量设计好索引能够满足需求，当然这几乎是不可能的，毕竟存在着万恶的产品经理，所以掌握&quot;平滑切换线上的ES索引&quot;就很必要，接下来我们就来看一看如何实现！ 前置条件 能够平滑切换">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何平滑切换线上的ElasticSearch索引">
+<meta name="twitter:title" content="如何平滑切换线上的ElasticSearch索引">
+<meta property="og:url" content="https://asong2020.github.io/2021/04/%E5%A6%82%E4%BD%95%E5%B9%B3%E6%BB%91%E5%88%87%E6%8D%A2%E7%BA%BF%E4%B8%8A%E7%9A%84elasticsearch%E7%B4%A2%E5%BC%95/">
+<meta property="twitter:url" content="https://asong2020.github.io/2021/04/%E5%A6%82%E4%BD%95%E5%B9%B3%E6%BB%91%E5%88%87%E6%8D%A2%E7%BA%BF%E4%B8%8A%E7%9A%84elasticsearch%E7%B4%A2%E5%BC%95/">
+<meta property="og:site_name" content="asong的成长记录小屋">
+<meta property="og:description" content="前言 哈喽，大家好，我是asong，今天与大家聊一聊如何平滑切换线上的ES索引。使用过ES的朋友们都知道，修改索引真的是一件费时又费力的工作，所以我们应该在创建索引的时候就尽量设计好索引能够满足需求，当然这几乎是不可能的，毕竟存在着万恶的产品经理，所以掌握&quot;平滑切换线上的ES索引&quot;就很必要，接下来我们就来看一看如何实现！ 前置条件 能够平滑切换">
+<meta name="twitter:description" content="前言 哈喽，大家好，我是asong，今天与大家聊一聊如何平滑切换线上的ES索引。使用过ES的朋友们都知道，修改索引真的是一件费时又费力的工作，所以我们应该在创建索引的时候就尽量设计好索引能够满足需求，当然这几乎是不可能的，毕竟存在着万恶的产品经理，所以掌握&quot;平滑切换线上的ES索引&quot;就很必要，接下来我们就来看一看如何实现！ 前置条件 能够平滑切换">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-04-10T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-04-10T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="架构设计杂谈">
+    
+  
+  
+    
+      <meta property="article:tag" content="ElasticSearch">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg">
+  <meta property="twitter:image" content="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg">
+
+
+    <title>如何平滑切换线上的ElasticSearch索引</title>
+
+    <link rel="icon" href="https://asong2020.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://asong2020.github.io/2021/04/%E5%A6%82%E4%BD%95%E5%B9%B3%E6%BB%91%E5%88%87%E6%8D%A2%E7%BA%BF%E4%B8%8A%E7%9A%84elasticsearch%E7%B4%A2%E5%BC%95/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://asong2020.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="1">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://asong2020.github.io/">asong的成长记录小屋</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://asong2020.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="1">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://asong2020.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">asong</h4>
+        
+          <h5 class="sidebar-profile-bio">欢迎关注公众号：<strong>Golang梦工厂</strong></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/categories/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/post">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/asong2020" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="1"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      如何平滑切换线上的ElasticSearch索引
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-04-10T00:00:00Z">
+        
+  
+  
+  
+  
+    10 四月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://asong2020.github.io/categories/%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e6%9d%82%e8%b0%88">架构设计杂谈</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h2 id="前言">前言</h2>
+<blockquote>
+<p>哈喽，大家好，我是<code>asong</code>，今天与大家聊一聊如何平滑切换线上的<code>ES</code>索引。使用过<code>ES</code>的朋友们都知道，修改索引真的是一件费时又费力的工作，所以我们应该在创建索引的时候就尽量设计好索引能够满足需求，当然这几乎是不可能的，毕竟存在着万恶的产品经理，所以掌握&quot;平滑切换线上的<code>ES</code>索引&quot;就很必要，接下来我们就来看一看如何实现！</p>
+</blockquote>
+<h2 id="前置条件">前置条件</h2>
+<p>能够平滑切换线上的<code>ES</code>索引需要有两个先决条件，只有满足了这两个条件才能去执行接下来的平滑切换操作，否则一切操作都是白费。</p>
+<h3 id="前置条件之使用别名访问索引">前置条件之使用别名访问索引</h3>
+<p>重建索引的问题是必须更新应用中的索引名称，索引别名就是用来解决这个问题的。索引别名就像一个快捷方式或软连接，可以指向一个或多个索引，也可以给任何一个需要索引名的API来使用。<em>别名</em> 带给我们极大的灵活性，允许我们做下面这些：</p>
+<ul>
+<li>在运行的集群中可以无缝的从一个索引切换到另一个索引</li>
+<li>给多个索引分组</li>
+<li>给索引的一个子集创建 <code>视图</code></li>
+</ul>
+<p>索引与索引别名的关系，我们画个图来说一下：</p>
+<p><img src="https://song-oss.oss-cn-beijing.aliyuncs.com/golang_dream/article/static/%E6%88%AA%E5%B1%8F2021-04-02%20%E4%B8%8B%E5%8D%889.12.01.png" alt=""></p>
+<p>上图中<code>user_index</code>就是索引别名，<code>user_index_v1</code>、<code>user_index_v2</code>、<code>user_index_v3</code>分别是三个索引，这里索引别名<code>user_index</code>与<code>user_index_v1</code>进行了关联，所以我们搜索的时候使用索引别名，也就是去索引<code>user_index_v1</code>上查询。假设现在我们不想使用索引<code>user_index_v1</code>了，想使用索引<code>user_index_v2</code>，那么直接使用<code>_aliases</code>操作执行原子操作(后面介绍具体使用)，将索引别名<code>user_index</code>与索引<code>user_index_v2</code>进行关联，现在使用索引别名<code>user_index</code>搜索的就是索引<code>user_index_v2</code>的数据了。</p>
+<h3 id="前置条件之足够空间">前置条件之足够空间</h3>
+<p>既然要重建<code>ES</code>索引，就一定保证你有足够的空间存储数据，可以使用如下指令查看<code>ES</code>每个节点的可用磁盘空间：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">curl</span> <span style="color:#a6e22e">http</span>:<span style="color:#75715e">//localhost:9200/_cat/allocation\?v
+</span></code></pre></div><p>获得结果如下：</p>
+<p><img src="https://song-oss.oss-cn-beijing.aliyuncs.com/golang_dream/article/static/%E6%88%AA%E5%B1%8F2021-04-02%20%E4%B8%8B%E5%8D%889.32.20.png" alt=""></p>
+<h2 id="如何平滑切换">如何平滑切换</h2>
+<p>因为大家使用的<code>ES</code>场景不同，所以平滑切换的步骤会稍有偏差，但是都离不开这几个步骤：</p>
+<ol>
+<li>创建新索引</li>
+<li>同步数据/数据迁移到新索引</li>
+<li>切换索引</li>
+</ol>
+<p>先介绍一下数据迁移和切换索引使用什么指令操作：</p>
+<ul>
+<li>数据迁移</li>
+</ul>
+<p>使用<code>ES</code>中提供的<code>reindex api</code>就可以将数据<code>copy</code>到新索引中，比如：</p>
+<pre><code class="language-curl" data-lang="curl">curl --location --request POST 'http://localhost:9200/_reindex' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  &quot;conflicts&quot;: &quot;proceed&quot;,
+  &quot;source&quot;: {
+    &quot;index&quot;: &quot;user_index_v1&quot;
+  },
+  &quot;dest&quot;: {
+    &quot;index&quot;: &quot;user_index_v2&quot;,
+    &quot;op_type&quot;: &quot;create&quot;,
+    &quot;version_type&quot;: &quot;external&quot;
+  }
+}'
+</code></pre><p>介绍一下上面几个字段的意义：</p>
+<ul>
+<li><code>&quot;source&quot;:{&quot;index&quot;: &quot;user_index_v1&quot;}</code>：这里代表我们要迁移数据的源索引；</li>
+<li><code>&quot;dest&quot;:{&quot;index&quot;: &quot;user_index_v2&quot;}</code>：这里代表我们要迁移的目标索引；</li>
+<li><code>&quot;conflicts&quot;: &quot;proceed&quot;</code>：默认情况下，版本冲突会导致<code>_reindex</code>操作终止，可以设置这个字段使该请求遇到冲突时不会终止，而是统计冲突数量；</li>
+<li><code>&quot;version_type&quot;: &quot;extrenal&quot;</code>：这个字段介绍起来比较复杂，且听我细细道来。<code>_reindex</code>指令会生成源索引的快照，它的目标索引必须是一个不同的索引[新索引]，以便避免版本冲突。如果不设置<code>version_type</code>字段，默认为<code>internal</code>，<code>ES</code>会直接将文档转存储到目标索引中(<code>dest index</code>)，直接覆盖任何具有相同类型和<code>id</code>的<code>document</code>，不会产生版本冲突。如果把<code>version_type</code>设置为<code>extertral</code>，那么<code>ES</code>会从源索引(<code>source index</code>)中读取<code>version</code>字段，当遇到具有相同类型和<code>id</code>的<code>document</code>时，只会保留<code>new version</code>，即最新的<code>version</code>对应的数据。此时可能会有冲突产生，比如当把<code>op_tpye</code>设置为<code>create</code>，对于产生的冲突现象，返回体中的 <code>failures</code> 会携带冲突的数据信息【类似详细的日志可以查看】。</li>
+<li><code>op_type</code>：<code>op_type</code> 参数控制着写入数据的冲突处理方式，如果把 <code>op_type</code> 设置为 <code>create</code>【默认值】，在 <code>_reindex API</code> 中，表示写入时只在 <code>dest index</code> 中添加不存在的 <code>doucment</code>，如果相同的 <code>document</code> 已经存在，则会报 <code>version confilct</code> 的错误，那么索引操作就会失败。【这种方式与使用 <code>_create API</code> 时效果一致】。</li>
+</ul>
+<p>更多<code>_redinx api</code>使用方法可以移步官方文档学习：https://www.elastic.co/guide/en/elasticsearch/reference/5.6/docs-reindex.html</p>
+<p>上面只是举一个简单的例子，具体要在数据迁移中使用哪些参数需要根据场景而定。</p>
+<p>什么时候可以选择数据迁移：</p>
+<ol>
+<li>当我们新创建的索引只改变了<code>mapping</code>结构时，例如：删除字段，更新字段的类型，这种场景就可以直接使用<code>_reindex</code>进行数据迁移；</li>
+<li>新创建的索引中添加了新字段，但是新的字段都是由老的字段计算得到的，这种情况，也可以使用<code>_reindex</code>进行数据迁移，<code>api</code>中使用<code>script</code>参数，编写你的脚本即可。</li>
+</ol>
+<p>注意：使用<code>_redindex</code>接口时要注意一个问题，接口会在<code>reindex</code>结束后返回，接口超时控制只有<code>30s</code>，如果<code>reindex</code>时间过长，建议加上<code>wait_for_completion=false</code>参数，这样<code>redindex</code>就变成异步任务，返回的是<code>taskID</code>，查看进度可以通过 <code>_tasks API</code> 进行查看。</p>
+<ul>
+<li>切换索引</li>
+</ul>
+<p><code>ES</code>中两种方式管理别名：<code>_alias</code>用于单个操作，<code>_aliases</code>用于执行多个原子级操作。</p>
+<p>因为我们这里要做的是切换索引，主要分为两个步骤：</p>
+<ol>
+<li>移除当前索引与索引别名的关联</li>
+<li>将新建的索引与索引别名进行关联</li>
+</ol>
+<p>所以我们可以选择<code>_alisases</code>执行原子操作：</p>
+<pre><code class="language-curl" data-lang="curl">curl --location --request POST 'http://localhost:9200/_aliases' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    &quot;actions&quot;: [
+        {&quot;remove&quot;: {&quot;index&quot;: &quot;user_index_v2&quot;, &quot;alias&quot;: &quot;user_index&quot;}},
+        { &quot;add&quot;: {&quot;index&quot;: &quot;user_index_v1&quot;,  &quot;alias&quot;: &quot;user_index&quot;}}
+    ]
+}'
+</code></pre><h3 id="举例子">举例子</h3>
+<p>假设我们有一个<code>user_index_v1</code>，他的<code>mapping</code>结构如下；</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;mappings&#34;</span>:{
+        <span style="color:#f92672">&#34;properties&#34;</span>:{
+            <span style="color:#f92672">&#34;id&#34;</span>:{
+                <span style="color:#f92672">&#34;type&#34;</span>:<span style="color:#e6db74">&#34;byte&#34;</span>
+            },
+            <span style="color:#f92672">&#34;Name&#34;</span>:{
+                <span style="color:#f92672">&#34;type&#34;</span>:<span style="color:#e6db74">&#34;text&#34;</span>
+            },
+            <span style="color:#f92672">&#34;Age&#34;</span>:{
+                <span style="color:#f92672">&#34;type&#34;</span>:<span style="color:#e6db74">&#34;byte&#34;</span>
+            }
+        }
+    }
+}
+</code></pre></div><p>现在这个<code>v1</code>索引中，我们的<code>id</code>字段使用的<code>byte</code>类型，显然范围是比较小的，随着数据量增多，<code>id</code>数值的增大，该字段已经不能满足存储需求了，所以需要把它换成<code>long</code>类型，因此可以创建<code>v2</code>索引：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;mappings&#34;</span>:{
+        <span style="color:#f92672">&#34;properties&#34;</span>:{
+            <span style="color:#f92672">&#34;id&#34;</span>:{
+                <span style="color:#f92672">&#34;type&#34;</span>:<span style="color:#e6db74">&#34;long&#34;</span>
+            },
+            <span style="color:#f92672">&#34;Name&#34;</span>:{
+                <span style="color:#f92672">&#34;type&#34;</span>:<span style="color:#e6db74">&#34;text&#34;</span>
+            },
+            <span style="color:#f92672">&#34;Age&#34;</span>:{
+                <span style="color:#f92672">&#34;type&#34;</span>:<span style="color:#e6db74">&#34;byte&#34;</span>
+            }
+        }
+    }
+}
+</code></pre></div><p>现在我们就来考虑一下，如何平滑的进行索引切换。这里假设我们<code>ES</code>中数据同步采用的<code>消息队列</code>推送完成的，所以在切换索引时要考虑数据损失的问题。</p>
+<p>这里我们可以列举几种方案如下：</p>
+<ul>
+<li>方案一：直接创建<code>v2</code>索引，使用<code>_aliases</code>切换索引，进行数据迁移，优点是直接切换别名和索引的关联，简单方便，缺点是出现问题回退到旧索引，会有数据损失，直接切换到<code>v2</code>索引会导致服务在数据没有迁移完之前不可用。</li>
+<li>方案二：创建<code>v2</code>索引，添加<code>v2</code>索引与别名的关联，进行数据迁移，<code>_alias</code>操作解除别名和<code>v2</code>索引的关联。优点是不会造成服务不可用，缺点是在解除别名和<code>v1</code>关联之前，一个别名关联两个索引，单索引操作无法执行，只能搜索，搜索也会出现数据重复，并且也会造成数据损失。</li>
+<li>方案三：创建<code>v2</code>索引，添加<code>v2</code>索引与别名的关联，修改代码写入操作使用<code>v2</code>索引，搜索操作使用别名索引，进行数据迁移，解除<code>v1</code>索引与别名的关联，优点是搜索和写入操作分开了，缺点是回退需要修改代码，并且会出现数据损失，如果<code>v2</code>索引不可用了，不能立刻回退索引。</li>
+<li>方案四：创建<code>v2</code>索引，进行数据迁移，然后切换索引；优点是同步数据到v2期间搜索功能正常使用，回退无数据损失；缺点是会造成数据丢失。</li>
+<li>方案五：创建<code>v2</code>索引，添加两个别名索引<code>read</code>和<code>write</code>，添加别名<code>read</code>和<code>v1</code>索引、<code>v2</code>索引的关联，添加别名<code>write</code>和<code>v2</code>索引的关联，进行数据迁移，解除别名<code>read</code>和<code>v1</code>索引的关联；优点是搜索和写入分开了，更新索引时只需要创建新索引，数据同步完成后，解除别名<code>read</code>和旧索引关联即可；缺点是数据迁移完成之前，搜索结果会出现重复，回退到旧索引，会有数据损失。</li>
+</ul>
+<p>这里总共列举了5种方案，我也不推荐具体使用那个方案比较好，各有利弊，大家可以根据自己的业务场景来进行选择。</p>
+<p>这里以选择方案四为例子，给出我的脚本数据，作为样例；</p>
+<ul>
+<li>创建<code>user_index_v2</code>索引：</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+url<span style="color:#f92672">=</span>$1
+index<span style="color:#f92672">=</span>$2
+
+
+echo <span style="color:#e6db74">`</span>curl --location --request GET <span style="color:#e6db74">${</span>url<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>index<span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>
+
+echo <span style="color:#e6db74">`</span>curl --location --request PUT <span style="color:#e6db74">${</span>url<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>index<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--data-raw <span style="color:#e6db74">&#39;{
+</span><span style="color:#e6db74">    &#34;mappings&#34;:{
+</span><span style="color:#e6db74">        &#34;properties&#34;:{
+</span><span style="color:#e6db74">            &#34;id&#34;:{
+</span><span style="color:#e6db74">                &#34;type&#34;:&#34;long&#34;
+</span><span style="color:#e6db74">            },
+</span><span style="color:#e6db74">            &#34;Name&#34;:{
+</span><span style="color:#e6db74">                &#34;type&#34;:&#34;text&#34;
+</span><span style="color:#e6db74">            },
+</span><span style="color:#e6db74">            &#34;Age&#34;:{
+</span><span style="color:#e6db74">                &#34;type&#34;:&#34;byte&#34;
+</span><span style="color:#e6db74">            }
+</span><span style="color:#e6db74">        }
+</span><span style="color:#e6db74">    }
+</span><span style="color:#e6db74">}&#39;</span><span style="color:#e6db74">`</span>
+
+echo <span style="color:#e6db74">`</span>curl --location --request GET <span style="color:#e6db74">${</span>url<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>index<span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>
+</code></pre></div><p>运行指令：<code>./create_index.sh http://localhost:9200 user_index_v2</code></p>
+<ul>
+<li>进行数据迁移(数据量比较大时建议分批<code>and</code>异步处理)</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+url<span style="color:#f92672">=</span>$1
+
+
+
+echo <span style="color:#e6db74">`</span>curl --location --request POST <span style="color:#e6db74">${</span>url<span style="color:#e6db74">}</span>/<span style="color:#e6db74">&#39;_reindex?wait_for_completion=false&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--header <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>--data-raw <span style="color:#e6db74">&#39;{
+</span><span style="color:#e6db74">  &#34;conflicts&#34;: &#34;proceed&#34;,
+</span><span style="color:#e6db74">  &#34;source&#34;: {
+</span><span style="color:#e6db74">    &#34;index&#34;: &#34;user_index_v1&#34;
+</span><span style="color:#e6db74">  },
+</span><span style="color:#e6db74">  &#34;dest&#34;: {
+</span><span style="color:#e6db74">    &#34;index&#34;: &#34;user_index_v2&#34;,
+</span><span style="color:#e6db74">    &#34;op_type&#34;: &#34;create&#34;,
+</span><span style="color:#e6db74">    &#34;version_type&#34;: &#34;external&#34;
+</span><span style="color:#e6db74">  }
+</span><span style="color:#e6db74">}&#39;</span><span style="color:#e6db74">`</span>
+
+</code></pre></div><p>运行指令：<code>./reindex.sh http://localhost:9200</code></p>
+<ul>
+<li>切换索引</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+url<span style="color:#f92672">=</span>$1
+aliasIndex<span style="color:#f92672">=</span>$2
+oldIndex<span style="color:#f92672">=</span>$3
+newIndex<span style="color:#f92672">=</span>$4
+
+echo <span style="color:#e6db74">`</span>curl --location --request GET <span style="color:#e6db74">${</span>url<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>aliasIndex<span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>
+
+echo <span style="color:#e6db74">`</span>curl --location --request POST <span style="color:#e6db74">${</span>url<span style="color:#e6db74">}</span>/_aliases --header <span style="color:#e6db74">&#39;Content-Type: application/json&#39;</span> --data-raw <span style="color:#e6db74">&#39;{&#34;actions&#34;: [{&#34;remove&#34;: {&#34;index&#34;: &#34;&#39;</span>$oldIndex<span style="color:#e6db74">&#39;&#34;, &#34;alias&#34;: &#34;&#39;</span>$aliasIndex<span style="color:#e6db74">&#39;&#34;}},{ &#34;add&#34;: {&#34;index&#34;: &#34;&#39;</span>$newIndex<span style="color:#e6db74">&#39;&#34;,  &#34;alias&#34;: &#34;&#39;</span>$aliasIndex<span style="color:#e6db74">&#39;&#34;}}]}&#39;</span><span style="color:#e6db74">`</span>
+
+echo <span style="color:#e6db74">`</span>curl --location --request GET <span style="color:#e6db74">${</span>url<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>aliasIndex<span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>
+</code></pre></div><p><code>运行指令：./aliases.sh http://localhost:9200 user_index user_index_v1 user_index_v2</code></p>
+<h2 id="总结">总结</h2>
+<p>本文例举了几种平滑切换<code>ES</code>索引的方案，可以看出修改索引真不是一件容易的事情，要考虑的事情比较多，所以最好在第一次创建索引的时候就多考虑一下以后的使用场景，确定好字段和类型，这样就可以避免重建<code>ES</code>索引。当然随着产品的需求变更，重建<code>ES</code>索引也是不可避免的，上面几种仅供大家参考，根据自己的场景去选择就好啦。</p>
+<p><strong>好啦，这篇文章就到这里啦，素质三连（分享、点赞、在看）都是笔者持续创作更多优质内容的动力！</strong></p>
+<p><strong>创建了一个Golang学习交流群，欢迎各位大佬们踊跃入群，我们一起学习交流。入群方式：加我vx拉你入群，或者公众号获取入群二维码</strong></p>
+<p><strong>结尾给大家发一个小福利吧，最近我在看[微服务架构设计模式]这一本书，讲的很好，自己也收集了一本PDF，有需要的小伙可以到自行下载。获取方式：关注公众号：[Golang梦工厂]，后台回复：[微服务]，即可获取。</strong></p>
+<p><strong>我翻译了一份GIN中文文档，会定期进行维护，有需要的小伙伴后台回复[gin]即可下载。</strong></p>
+<p><strong>翻译了一份Machinery中文文档，会定期进行维护，有需要的小伙伴们后台回复[machinery]即可获取。</strong></p>
+<p>**我是asong，一名普普通通的程序猿，让我们一起慢慢变强吧。欢迎各位的关注，我们下期见~~~**</p>
+<p><img src="https://song-oss.oss-cn-beijing.aliyuncs.com/golang_dream/article/static/%E6%89%AB%E7%A0%81_%E6%90%9C%E7%B4%A2%E8%81%94%E5%90%88%E4%BC%A0%E6%92%AD%E6%A0%B7%E5%BC%8F-%E7%99%BD%E8%89%B2%E7%89%88.png" alt=""></p>
+<p>推荐往期文章：</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/nPWvqaQiQ6Z0TaPoqg3t2Q">Go看源码必会知识之unsafe包</a></li>
+<li><a href="https://mp.weixin.qq.com/s/mzSCWI8C_ByIPbb07XYFTQ">源码剖析panic与recover，看不懂你打我好了！</a></li>
+<li><a href="https://mp.weixin.qq.com/s/PQ06eL8kMWoGXodpnyjNcA">详解并发编程基础之原子操作(atomic包)</a></li>
+<li><a href="https://mp.weixin.qq.com/s/FUmoBB8OHNSfy7STR0GsWw">详解defer实现机制</a></li>
+<li><a href="https://mp.weixin.qq.com/s/dNeCIwmPei2jEWGF6AuWQw">空结构体引发的大型打脸现场</a></li>
+<li><a href="https://mp.weixin.qq.com/s/wURQFRt2ISz66icW7jbHFw">Leaf—Segment分布式ID生成系统（Golang实现版本）</a></li>
+<li><a href="https://mp.weixin.qq.com/s/rZBsoKuS-ORvV3kML39jKw">十张动图带你搞懂排序算法(附go实现代码)</a></li>
+<li><a href="https://mp.weixin.qq.com/s/JHbFh2GhoKewlemq7iI59Q">go参数传递类型</a></li>
+<li><a href="https://mp.weixin.qq.com/s/0MykGst1e2pgnXXUjojvhQ">手把手教姐姐写消息队列</a></li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzIzMDU0MTA3Nw==&amp;mid=2247483988&amp;idx=1&amp;sn=3bd52650907867d65f1c4d5c3cff8f13&amp;chksm=e8b0902edfc71938f7d7a29246d7278ac48e6c104ba27c684e12e840892252b0823de94b94c1&amp;token=1558933779&amp;lang=zh_CN#rd">常见面试题之缓存雪崩、缓存穿透、缓存击穿</a></li>
+<li><a href="https://mp.weixin.qq.com/s/JKMHUpwXzLoSzWt_ElptFg">详解Context包，看这一篇就够了！！！</a></li>
+<li><a href="https://mp.weixin.qq.com/s/ffEsTpO-tyNZFR5navAbdA">面试官：你能用Go写段代码判断当前系统的存储方式吗?</a></li>
+</ul>
+
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://asong2020.github.io/tags/elasticsearch/">ElasticSearch</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/2021/04/go%E8%AF%AD%E8%A8%80%E4%B8%ADinterface%E7%9A%84%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%8F%8A%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/" data-tooltip="Go语言中interface的类型断言实现原理及性能分析">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/2021/03/go%E8%AF%AD%E8%A8%80%E6%A0%87%E5%87%86%E5%BA%93unsafe%E5%8C%85%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" data-tooltip="Go语言标准库unsafe包源码解析">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 asong. All Rights Reserved
+  </span>
+  <script src="https://utteranc.es/client.js"
+          repo="liangyuanpeng/liangyuanpeng.github.io"
+          issue-term="title"
+          theme="github-light"
+          crossorigin="anonymous"
+          async>
+  </script>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="1">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/2021/04/go%E8%AF%AD%E8%A8%80%E4%B8%ADinterface%E7%9A%84%E7%B1%BB%E5%9E%8B%E6%96%AD%E8%A8%80%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%8F%8A%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/" data-tooltip="Go语言中interface的类型断言实现原理及性能分析">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/2021/03/go%E8%AF%AD%E8%A8%80%E6%A0%87%E5%87%86%E5%BA%93unsafe%E5%8C%85%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" data-tooltip="Go语言标准库unsafe包源码解析">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="1">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">asong</h4>
+    
+      <div id="about-card-bio">欢迎关注公众号：<strong>Golang梦工厂</strong></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        后端开发工程师
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        深圳
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://asong2020.github.io/images/cover.jpg');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://asong2020.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+  
+
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      CommonHTML: { linebreaks: { automatic: true } },
+      tex2jax: { inlineMath: [ ['$', '$'], ['\\(','\\)'] ], displayMath: [ ['$$','$$'], ['\\[', '\\]'] ], processEscapes: false },
+      messageStyle: 'none'
+    });
+  </script>
+
+
+
+    
+  </body>
+</html>
+
