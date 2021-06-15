@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.80.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="asong">
+<meta name="keywords" content="go, 标准库, sort.Search, 二分查找, asong, go, golang">
+<meta name="description" content="前言 哈喽，大家好，我是asong。今天与大家分享一下Go标准库sort.Search是如何实现二分查找的，为什么突然想到分享这个函数呢。起因是这周在刷leetcode的一道题时，需要使用到二分查找，最开始是自己实现了一版，后面就想Go语言标准库这么全，应该会有这个封装，果然被我找到了，顺便看了一下他是怎么实现的，感觉挺有意思的，就赶紧来分享一下。 小声逼逼一下">
+
+
+<meta property="og:description" content="前言 哈喽，大家好，我是asong。今天与大家分享一下Go标准库sort.Search是如何实现二分查找的，为什么突然想到分享这个函数呢。起因是这周在刷leetcode的一道题时，需要使用到二分查找，最开始是自己实现了一版，后面就想Go语言标准库这么全，应该会有这个封装，果然被我找到了，顺便看了一下他是怎么实现的，感觉挺有意思的，就赶紧来分享一下。 小声逼逼一下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go标准库是如何实现二分查找的">
+<meta name="twitter:title" content="Go标准库是如何实现二分查找的">
+<meta property="og:url" content="https://asong2020.github.io/2021/06/go%E6%A0%87%E5%87%86%E5%BA%93%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%9A%84/">
+<meta property="twitter:url" content="https://asong2020.github.io/2021/06/go%E6%A0%87%E5%87%86%E5%BA%93%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%9A%84/">
+<meta property="og:site_name" content="asong的成长记录小屋">
+<meta property="og:description" content="前言 哈喽，大家好，我是asong。今天与大家分享一下Go标准库sort.Search是如何实现二分查找的，为什么突然想到分享这个函数呢。起因是这周在刷leetcode的一道题时，需要使用到二分查找，最开始是自己实现了一版，后面就想Go语言标准库这么全，应该会有这个封装，果然被我找到了，顺便看了一下他是怎么实现的，感觉挺有意思的，就赶紧来分享一下。 小声逼逼一下">
+<meta name="twitter:description" content="前言 哈喽，大家好，我是asong。今天与大家分享一下Go标准库sort.Search是如何实现二分查找的，为什么突然想到分享这个函数呢。起因是这周在刷leetcode的一道题时，需要使用到二分查找，最开始是自己实现了一版，后面就想Go语言标准库这么全，应该会有这个封装，果然被我找到了，顺便看了一下他是怎么实现的，感觉挺有意思的，就赶紧来分享一下。 小声逼逼一下">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-06-15T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-06-15T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="Go源码">
+    
+  
+  
+    
+      <meta property="article:tag" content="标准库">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg">
+  <meta property="twitter:image" content="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg">
+
+
+    <title>Go标准库是如何实现二分查找的</title>
+
+    <link rel="icon" href="https://asong2020.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://asong2020.github.io/2021/06/go%E6%A0%87%E5%87%86%E5%BA%93%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%9A%84/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://asong2020.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="1">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://asong2020.github.io/">asong的成长记录小屋</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://asong2020.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="1">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://asong2020.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">asong</h4>
+        
+          <h5 class="sidebar-profile-bio">欢迎关注公众号：<strong>Golang梦工厂</strong></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/categories/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/post">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/asong2020" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="1"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      Go标准库是如何实现二分查找的
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-06-15T00:00:00Z">
+        
+  
+  
+  
+  
+    15 六月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://asong2020.github.io/categories/go%e6%ba%90%e7%a0%81">Go源码</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h2 id="前言">前言</h2>
+<blockquote>
+<p>哈喽，大家好，我是<code>asong</code>。今天与大家分享一下<code>Go</code>标准库<code>sort.Search</code>是如何实现二分查找的，为什么突然想到分享这个函数呢。起因是这周在刷<code>leetcode</code>的一道题时，需要使用到二分查找，最开始是自己实现了一版，后面就想<code>Go</code>语言标准库这么全，应该会有这个封装，果然被我找到了，顺便看了一下他是怎么实现的，感觉挺有意思的，就赶紧来分享一下。</p>
+<p>小声逼逼一下，最近有读者反馈说最近发文不够频繁，在这里同步一下我最近干什么：</p>
+<ol>
+<li>工作太忙了</li>
+<li>正在写一个本地缓存，后面会分享出来</li>
+<li>正在筹备我的第一个开源项目，敬请期待</li>
+</ol>
+</blockquote>
+<h2 id="什么是二分查找">什么是二分查找</h2>
+<p>以下来自百度百科：</p>
+<blockquote>
+<p>二分查找也称折半查找（Binary Search），它是一种效率较高的查找方法。但是，折半查找要求线性表必须采用<a href="https://baike.baidu.com/item/%E9%A1%BA%E5%BA%8F%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/1347176">顺序存储结构</a>，而且表中元素按关键字有序排列。</p>
+</blockquote>
+<p>总结一下，使用二分查找必须要符合两个要求：</p>
+<ul>
+<li>必须采用顺序存储结构</li>
+<li>必须按关键字大小有序排列</li>
+</ul>
+<p>我们来举个例子，就很容易理解了，就拿我和我女朋友的聊天内容做个例子吧：</p>
+<blockquote>
+<p>我家宝宝每次买一件新衣服，就会习惯性的问我一句，小松子，来猜一猜我这次花了多少钱？</p>
+<p>小松子：50？</p>
+<p>臭宝：你埋汰我呢？欠打！</p>
+<p>小松子：500？</p>
+<p>臭宝：你当我是富婆呢？能不能有点智商！</p>
+<p>小松子：250？</p>
+<p>臭宝：我感觉你在骂我，可我还没有证据。少啦，少啦！！！</p>
+<p>小松子：哎呀，好难猜呀，290？</p>
+<p>臭宝：啊！你这臭男人，就是在骂我！气死啦，气死啦！多啦，多啦！</p>
+<p>小松子：难道是260？</p>
+<p>臭宝：哎呦，挺厉害呀，竟然猜对了！</p>
+<p>后面对话内容就省略啦&hellip;..</p>
+</blockquote>
+<p>这里我只需要<code>5</code>次就成功猜出来了，这就是二分查找的思想，每一次猜测，我们都选取一段整数范围的中位数，根据条件帮我们逐步缩小范围，每一次都以让剩下的选择范围缩小一半，效率提高。</p>
+<ul>
+<li>二分查找的时间复杂度</li>
+</ul>
+<p>二分查找每次把搜索区域减少一半，时间复杂度为O(logn)。（n代表集合中元素的个数）。</p>
+<p>空间复杂度为O(1)。</p>
+<h2 id="自己实现一个二分查找">自己实现一个二分查找</h2>
+<p>二分算法的实现还是比较简单的，可以分两种方式实现：递归和非递归方式实现，示例代码如下：</p>
+<p>非递归方式实现：</p>
+<blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// 二分查找非递归实现
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">binarySearch</span>(<span style="color:#a6e22e">target</span> <span style="color:#66d9ef">int64</span>, <span style="color:#a6e22e">nums</span> []<span style="color:#66d9ef">int64</span>) <span style="color:#66d9ef">int</span> {
+   <span style="color:#a6e22e">left</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+   <span style="color:#a6e22e">right</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">nums</span>)
+   <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">left</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">right</span> {
+      <span style="color:#a6e22e">mid</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">left</span> <span style="color:#f92672">+</span> (<span style="color:#a6e22e">right</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">left</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">target</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">mid</span>] {
+         <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mid</span>
+      }
+      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">target</span> &gt; <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">mid</span>] {
+         <span style="color:#a6e22e">left</span> = <span style="color:#a6e22e">mid</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+         <span style="color:#66d9ef">continue</span>
+      }
+      <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">target</span> &lt; <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">mid</span>] {
+         <span style="color:#a6e22e">right</span> = <span style="color:#a6e22e">mid</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+         <span style="color:#66d9ef">continue</span>
+      }
+   }
+   <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+}
+</code></pre></div></blockquote>
+<p>总体思路很简单，每次我们都选取一段整数范围的中位数，然后根据条件让剩下的选择范围缩小一半。这里有一个要注意的点就是我们在获取中位数时使用的写法是<code> mid := left + (right - left) / 2</code>，而不是<code>mid = （left +right）/2</code>的写法，这是因为后者有可能会造成位数的溢出，也就会导致结果出问题。</p>
+<p>递归方式实现：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">nums</span> []<span style="color:#66d9ef">int64</span>, <span style="color:#a6e22e">target</span> <span style="color:#66d9ef">int64</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">binarySearchRecursive</span>(<span style="color:#a6e22e">target</span>, <span style="color:#a6e22e">nums</span>, <span style="color:#ae81ff">0</span>, len(<span style="color:#a6e22e">nums</span>))
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">binarySearchRecursive</span>(<span style="color:#a6e22e">target</span> <span style="color:#66d9ef">int64</span>, <span style="color:#a6e22e">nums</span> []<span style="color:#66d9ef">int64</span>, <span style="color:#a6e22e">left</span>, <span style="color:#a6e22e">right</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">left</span> &gt; <span style="color:#a6e22e">right</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+	}
+
+	<span style="color:#a6e22e">mid</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">left</span> <span style="color:#f92672">+</span> (<span style="color:#a6e22e">right</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">left</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">target</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">mid</span>] {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mid</span>
+	}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">mid</span>] &lt; <span style="color:#a6e22e">target</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">binarySearchRecursive</span>(<span style="color:#a6e22e">target</span>, <span style="color:#a6e22e">nums</span>, <span style="color:#a6e22e">mid</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">right</span>)
+	}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">mid</span>] &gt; <span style="color:#a6e22e">target</span> {
+
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">binarySearchRecursive</span>(<span style="color:#a6e22e">target</span>, <span style="color:#a6e22e">nums</span>, <span style="color:#a6e22e">left</span>, <span style="color:#a6e22e">mid</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+
+}
+</code></pre></div><h2 id="go标准库是如何实现二分查找的">Go标准库是如何实现二分查找的？</h2>
+<p>我们先看一下标准库中的代码实现：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Search</span>(<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">f</span> <span style="color:#66d9ef">func</span>(<span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">bool</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#75715e">// Define f(-1) == false and f(n) == true.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// Invariant: f(i-1) == false, f(j) == true.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">n</span>
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">j</span> {
+		<span style="color:#a6e22e">h</span> <span style="color:#f92672">:=</span> int(uint(<span style="color:#a6e22e">i</span><span style="color:#f92672">+</span><span style="color:#a6e22e">j</span>) <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">1</span>) <span style="color:#75715e">// avoid overflow when computing h
+</span><span style="color:#75715e"></span>		<span style="color:#75715e">// i ≤ h &lt; j
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">f</span>(<span style="color:#a6e22e">h</span>) {
+			<span style="color:#a6e22e">i</span> = <span style="color:#a6e22e">h</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#75715e">// preserves f(i-1) == false
+</span><span style="color:#75715e"></span>		} <span style="color:#66d9ef">else</span> {
+			<span style="color:#a6e22e">j</span> = <span style="color:#a6e22e">h</span> <span style="color:#75715e">// preserves f(j) == true
+</span><span style="color:#75715e"></span>		}
+	}
+	<span style="color:#75715e">// i == j, f(i-1) == false, and f(j) (= f(i)) == true  =&gt;  answer is i.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">i</span>
+}
+</code></pre></div><p>初一看，与我们上面的实现一点也不同呢，我们来分析一下。</p>
+<p>入参<code>n</code>就是代表要查找序列的长度，入参<code>f</code>就是我们自定义的条件。这段代码很短，大概思路就是：</p>
+<ul>
+<li>定义好这段序列的开始、结尾的位置</li>
+<li>使用位移操作获取中位数，这样能更好的避免溢出</li>
+<li>然后根据我们传入的条件判断是否符合条件，逐渐缩小范围</li>
+</ul>
+<p>这段代码与我实现的不同在于，它并不是在用户传入的比较函数<code>f</code>返回<code>true</code>就结束查找，而是继续在当前<code>[i, j)</code>区间的前半段查找，并且，当<code>f</code>为<code>false</code>时，也不比较当前元素与要查找的元素的大小关系，而是直接在后半段查找。所以<code>for</code>循环退出的唯一条件就是<code>i&gt;=j</code>，如果我们这样使用，就会出现问题：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">nums</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int64</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7</span>}
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Search</span>(len(<span style="color:#a6e22e">nums</span>), <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">bool</span>{
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">i</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>
+	}))
+}
+</code></pre></div><p>运行结果竟然是<code>7</code>，而不是<code>1</code>，如果我们把条件改成<code>return nums[i] &gt;=1</code>，运行结果就对了。这是因为我们传入的条件并不是让用户确认目标条件，这里的思想是让我们逐步缩小范围，通过这个条件，我们每次都可以缩小范围，说的有点饶，就上面的代码举个例子。现在是一个升序数组，我们要找的数值是<code>1</code>，我们传入的条件是<code>return nums[i]&gt;=1</code>，第一进入函数<code>Search</code>，我们获取中的中位数<code>h</code>是<code>3</code>，当前元素是大于目标数值的，所以我们只能在前半段查找，就是这样不断缩小范围，找到我们最终的那个数值，如果当前序列中没有我们要找的目标数值，那么就会返回我们可以插入的位置，也就是最后一位元素的坐标+1的位置。</p>
+<p>这个逻辑说实话，我也是第一次接触，仔细思考了一下，这种实现还是有一些优点的：</p>
+<ul>
+<li>使用<strong>移位操作</strong>，避免因为<code>i+j</code>太大而造成的溢出</li>
+<li>如果我们查找序列中有多个元素相等时，且我们要找的元素就是这个时，我们总会找到下标最小的那个元素</li>
+<li>如果我们没找到要找的目标元素时，返回的下标是我们可插入的位置，我们在进行数据插入时，依然可以保证数据的有序</li>
+</ul>
+<p><strong>注意：使用<code>sort.Search</code>时，入参条件是根据要查找的序列是升序序列还是降序序列来决定的，如果是升序序列，则传入的条件应该是<code>&gt;=目标元素值</code>，如果是降序序列，则传入的条件应该是<code>&lt;=目标元素值</code></strong></p>
+<h3 id="解析intuintij--1这段代码">解析<code>int(uint(i+j) &gt;&gt; 1)</code>这段代码</h3>
+<p>这里我想单独解析一下这段代码，因为很少见，所以可以当作一个知识点记一下。这里使用到的是移位操作，通过向右移动一位，正好可以得到<code>/2</code>的结果。具体什么原因呢，我画了一个图，手工画的，看完你就懂了：</p>
+<p><img src="https://song-oss.oss-cn-beijing.aliyuncs.com/golang_dream/article/static/%E6%88%AA%E5%B1%8F2021-06-14%20%E4%B8%8B%E5%8D%882.17.31.png" alt=""></p>
+<p>懂了吧，兄弟们！移位实现要比乘除发的效率高很多，我们在平常开发中可以使用这种方式来提升效率。</p>
+<p>这里还有一个点就是使用<code>uint</code>数据类型，因为<code>uint</code>的数据范围是<code>2^32</code>即<code>0</code>到<code>4294967295</code>。使用<code>uint</code>可以避免因为<code>i+j</code>太大而造成的溢出。</p>
+<h2 id="总结">总结</h2>
+<p>好啦，今天的文章到这里就结束了，最后我想说的是，没事大家可以专研一下<code>Go</code>标准库中的一些方法是怎样实现的，好的思想我们要借鉴过来。如果我们在面试中使用这种方式写出二分查找，那得到的<code>offer</code>的几率不就又增加了嘛～。</p>
+<p><strong>素质三连（分享、点赞、在看）都是笔者持续创作更多优质内容的动力！我是<code>asong</code>，我们下期见。</strong></p>
+<p><strong>创建了一个Golang学习交流群，欢迎各位大佬们踊跃入群，我们一起学习交流。入群方式：关注公众号获取。更多学习资料请到公众号领取。</strong></p>
+<p><img src="https://song-oss.oss-cn-beijing.aliyuncs.com/golang_dream/article/static/%E6%89%AB%E7%A0%81_%E6%90%9C%E7%B4%A2%E8%81%94%E5%90%88%E4%BC%A0%E6%92%AD%E6%A0%B7%E5%BC%8F-%E6%A0%87%E5%87%86%E8%89%B2%E7%89%88.png" alt=""></p>
+<p>推荐往期文章：</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/wBp4k7pJLNeSzyLVhGHLEA">Go语言如何实现可重入锁？</a></li>
+<li><a href="https://mp.weixin.qq.com/s/XJ9O9O4KS3LbZL0jYnJHPg">Go语言中new和make你使用哪个来分配内存？</a></li>
+<li><a href="https://mp.weixin.qq.com/s/mzSCWI8C_ByIPbb07XYFTQ">源码剖析panic与recover，看不懂你打我好了！</a></li>
+<li><a href="https://mp.weixin.qq.com/s/dNeCIwmPei2jEWGF6AuWQw">空结构体引发的大型打脸现场</a></li>
+<li><a href="https://mp.weixin.qq.com/s/wURQFRt2ISz66icW7jbHFw">Leaf—Segment分布式ID生成系统（Golang实现版本）</a></li>
+<li><a href="https://mp.weixin.qq.com/s/Dt46eoEXXXZc2ymr67_LVQ">面试官：两个nil比较结果是什么？</a></li>
+<li><a href="https://mp.weixin.qq.com/s/ffEsTpO-tyNZFR5navAbdA">面试官：你能用Go写段代码判断当前系统的存储方式吗?</a></li>
+<li><a href="https://mp.weixin.qq.com/s/8VQxK_Xh-bkVoOdMZs4Ujw">如何平滑切换线上Elasticsearch索引</a></li>
+</ul>
+
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://asong2020.github.io/tags/%E6%A0%87%E5%87%86%E5%BA%93/">标准库</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/2021/06/go%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E7%A5%9E%E5%A5%87%E5%87%BD%E6%95%B0init/" data-tooltip="Go语言中的神奇函数init">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 asong. All Rights Reserved
+  </span>
+  <script src="https://utteranc.es/client.js"
+          repo="liangyuanpeng/liangyuanpeng.github.io"
+          issue-term="title"
+          theme="github-light"
+          crossorigin="anonymous"
+          async>
+  </script>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="1">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/2021/06/go%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E7%A5%9E%E5%A5%87%E5%87%BD%E6%95%B0init/" data-tooltip="Go语言中的神奇函数init">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="1">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">asong</h4>
+    
+      <div id="about-card-bio">欢迎关注公众号：<strong>Golang梦工厂</strong></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        后端开发工程师
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        深圳
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://asong2020.github.io/images/cover.jpg');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://asong2020.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+  
+
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      CommonHTML: { linebreaks: { automatic: true } },
+      tex2jax: { inlineMath: [ ['$', '$'], ['\\(','\\)'] ], displayMath: [ ['$$','$$'], ['\\[', '\\]'] ], processEscapes: false },
+      messageStyle: 'none'
+    });
+  </script>
+
+
+
+    
+  </body>
+</html>
+

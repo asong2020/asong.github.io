@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.80.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="asong">
+<meta name="keywords" content="go, 标准库, init函数加载顺序, asong, go, golang">
+<meta name="description" content="前言 哈喽，兄弟们，我是asong。今天与大家聊一聊Go语言中的神奇函数init，为什么叫他神奇函数呢？因为该函数可以在所有程序执行开始前被调用，并且每个包下可以有多个init函数。这个函数使用起来比较简单，但是你们知道他的执行顺序是怎样的嘛？本文我们就一起来解密。 init函数的特性 先简单介绍一下init函数的基本特性： init 函数先于main函数自动执行 每个包中可">
+
+
+<meta property="og:description" content="前言 哈喽，兄弟们，我是asong。今天与大家聊一聊Go语言中的神奇函数init，为什么叫他神奇函数呢？因为该函数可以在所有程序执行开始前被调用，并且每个包下可以有多个init函数。这个函数使用起来比较简单，但是你们知道他的执行顺序是怎样的嘛？本文我们就一起来解密。 init函数的特性 先简单介绍一下init函数的基本特性： init 函数先于main函数自动执行 每个包中可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go语言中的神奇函数init">
+<meta name="twitter:title" content="Go语言中的神奇函数init">
+<meta property="og:url" content="https://asong2020.github.io/2021/06/go%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E7%A5%9E%E5%A5%87%E5%87%BD%E6%95%B0init/">
+<meta property="twitter:url" content="https://asong2020.github.io/2021/06/go%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E7%A5%9E%E5%A5%87%E5%87%BD%E6%95%B0init/">
+<meta property="og:site_name" content="asong的成长记录小屋">
+<meta property="og:description" content="前言 哈喽，兄弟们，我是asong。今天与大家聊一聊Go语言中的神奇函数init，为什么叫他神奇函数呢？因为该函数可以在所有程序执行开始前被调用，并且每个包下可以有多个init函数。这个函数使用起来比较简单，但是你们知道他的执行顺序是怎样的嘛？本文我们就一起来解密。 init函数的特性 先简单介绍一下init函数的基本特性： init 函数先于main函数自动执行 每个包中可">
+<meta name="twitter:description" content="前言 哈喽，兄弟们，我是asong。今天与大家聊一聊Go语言中的神奇函数init，为什么叫他神奇函数呢？因为该函数可以在所有程序执行开始前被调用，并且每个包下可以有多个init函数。这个函数使用起来比较简单，但是你们知道他的执行顺序是怎样的嘛？本文我们就一起来解密。 init函数的特性 先简单介绍一下init函数的基本特性： init 函数先于main函数自动执行 每个包中可">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-06-07T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-06-07T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="Go源码">
+    
+  
+  
+    
+      <meta property="article:tag" content="标准库">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg">
+  <meta property="twitter:image" content="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg">
+
+
+    <title>Go语言中的神奇函数init</title>
+
+    <link rel="icon" href="https://asong2020.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://asong2020.github.io/2021/06/go%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E7%A5%9E%E5%A5%87%E5%87%BD%E6%95%B0init/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://asong2020.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="1">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://asong2020.github.io/">asong的成长记录小屋</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://asong2020.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="1">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://asong2020.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">asong</h4>
+        
+          <h5 class="sidebar-profile-bio">欢迎关注公众号：<strong>Golang梦工厂</strong></h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/categories/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://asong2020.github.io/post">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/asong2020" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="1"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      Go语言中的神奇函数init
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-06-07T00:00:00Z">
+        
+  
+  
+  
+  
+    7 六月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://asong2020.github.io/categories/go%e6%ba%90%e7%a0%81">Go源码</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h2 id="前言">前言</h2>
+<blockquote>
+<p>哈喽，兄弟们，我是<code>asong</code>。今天与大家聊一聊<code>Go</code>语言中的神奇函数<code>init</code>，为什么叫他神奇函数呢？因为该函数可以在所有程序执行开始前被调用，并且每个包下可以有多个<code>init</code>函数。这个函数使用起来比较简单，但是你们知道他的执行顺序是怎样的嘛？本文我们就一起来解密。</p>
+</blockquote>
+<h2 id="init函数的特性"><code>init</code>函数的特性</h2>
+<p>先简单介绍一下<code>init</code>函数的基本特性：</p>
+<ul>
+<li><code>init </code>函数先于<code>main</code>函数自动执行</li>
+<li>每个包中可以有多个<code>init</code>函数，每个包中的源文件中也可以有多个<code>init</code>函数</li>
+<li><code>init</code>函数没有输入参数、返回值，也未声明，所以无法引用</li>
+<li>不同包的<code>init</code>函数按照包导入的依赖关系决定执行顺序</li>
+<li>无论包被导入多少次，<code>init</code>函数只会被调用一次，也就是只执行一次</li>
+</ul>
+<h2 id="init函数的执行顺序"><code>init</code>函数的执行顺序</h2>
+<p>我在刚学习<code>init</code>函数时就对他的执行顺序很好奇，在谷歌上搜了几篇文章，他们都有一样的图：</p>
+<p>下图来源于网络：</p>
+<p><img src="https://song-oss.oss-cn-beijing.aliyuncs.com/golang_dream/article/static/%E6%88%AA%E5%B1%8F2021-06-05%20%E4%B8%8A%E5%8D%889.55.15.png" alt="截屏2021-06-05 上午9.55.15"></p>
+<p>这张图片很清晰的反应了<code>init</code>函数的加载顺序：</p>
+<ul>
+<li>包加载优先级排在第一位，先层层递归进行包加载</li>
+<li>每个包中加载顺序为：<code>const</code> &gt; <code>var</code> &gt; <code>init</code>，首先进行初始化的是常量，然后是变量，最后才是<code>init</code>函数。针对包级别的变量初始化顺序，<a href="https://golang.org/ref/spec#Package_initialization"><code>Go</code>官方文档</a>给出这样一个例子：</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> (
+	<span style="color:#a6e22e">a</span> = <span style="color:#a6e22e">c</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">b</span>  <span style="color:#75715e">// == 9
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">b</span> = <span style="color:#a6e22e">f</span>()    <span style="color:#75715e">// == 4
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">c</span> = <span style="color:#a6e22e">f</span>()    <span style="color:#75715e">// == 5
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">d</span> = <span style="color:#ae81ff">3</span>      <span style="color:#75715e">// == 5 after initialization has finished
+</span><span style="color:#75715e"></span>)
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">f</span>() <span style="color:#66d9ef">int</span> {
+	<span style="color:#a6e22e">d</span><span style="color:#f92672">++</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">d</span>
+}
+</code></pre></div><p>变量的初始化按出现的顺序从前往后进行，假若某个变量需要依赖其他变量，则被依赖的变量先初始化。所以这个例子中，初始化顺序是 <code>d</code> -&gt; <code>b</code> -&gt; <code>c</code> -&gt; <code>a</code>。</p>
+<p>上图只是表达了<code>init</code>函数大概的加载顺序，有些细节我们还是不知道的，比如：当前包下有多个<code>init</code>函数，按照什么顺序执行，当前源文件下有多个<code>init</code>函数，这又按照什么顺序执行呢？本来想写个例子挨个验证一下的，后来一看<a href="https://golang.org/ref/spec#Package_initialization"><code>Go</code>官方文档</a>中都有说明，也就没有必要再写一个例子啦，直接说结论吧：</p>
+<ul>
+<li>如果当前包下有多个<code>init</code>函数，首先按照源文件名的字典序从前往后执行。</li>
+<li>若一个文件中出现多个<code>init</code>函数，则按照出现顺序从前往后执行。</li>
+</ul>
+<p>前面说的有点乱，对<code>init</code>函数的加载顺序做一个小结：</p>
+<blockquote>
+<p>从当前包开始，如果当前包包含多个依赖包，则先初始化依赖包，层层递归初始化各个包，在每一个包中，按照源文件的字典序从前往后执行，每一个源文件中，优先初始化常量、变量，最后初始化<code>init</code>函数，当出现多个<code>init</code>函数时，则按照顺序从前往后依次执行，每一个包完成加载后，递归返回，最后在初始化当前包！</p>
+</blockquote>
+<h2 id="init函数的使用场景"><code>init</code>函数的使用场景</h2>
+<p>还记得我之前的这篇文章吗：<a href="https://mp.weixin.qq.com/s/7rgs9J5jlnMn-S7_GE_IzA">go解锁设计模式之单例模式</a>，借用<code>init</code>函数的加载机制我们可以实现单例模式中的饿汉模式，具体怎么实现可以参考这篇文章，这里就不在写一遍了。</p>
+<p><code>init</code>函数的使用场景还是挺多的，比如进行服务注册、进行数据库或各种中间件的初始化连接等。<code>Go</code>的标准库中也有许多地方使用到了<code>init</code>函数，比如我们经常使用的<code>pprof</code>工具，他就使用到了<code>init</code>函数，在<code>init</code>函数里面进行路由注册：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">//go/1.15.7/libexec/src/cmd/trace/pprof.go
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">init</span>() {
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/io&#34;</span>, <span style="color:#a6e22e">serveSVGProfile</span>(<span style="color:#a6e22e">pprofByGoroutine</span>(<span style="color:#a6e22e">computePprofIO</span>)))
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/block&#34;</span>, <span style="color:#a6e22e">serveSVGProfile</span>(<span style="color:#a6e22e">pprofByGoroutine</span>(<span style="color:#a6e22e">computePprofBlock</span>)))
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/syscall&#34;</span>, <span style="color:#a6e22e">serveSVGProfile</span>(<span style="color:#a6e22e">pprofByGoroutine</span>(<span style="color:#a6e22e">computePprofSyscall</span>)))
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/sched&#34;</span>, <span style="color:#a6e22e">serveSVGProfile</span>(<span style="color:#a6e22e">pprofByGoroutine</span>(<span style="color:#a6e22e">computePprofSched</span>)))
+
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/regionio&#34;</span>, <span style="color:#a6e22e">serveSVGProfile</span>(<span style="color:#a6e22e">pprofByRegion</span>(<span style="color:#a6e22e">computePprofIO</span>)))
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/regionblock&#34;</span>, <span style="color:#a6e22e">serveSVGProfile</span>(<span style="color:#a6e22e">pprofByRegion</span>(<span style="color:#a6e22e">computePprofBlock</span>)))
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/regionsyscall&#34;</span>, <span style="color:#a6e22e">serveSVGProfile</span>(<span style="color:#a6e22e">pprofByRegion</span>(<span style="color:#a6e22e">computePprofSyscall</span>)))
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/regionsched&#34;</span>, <span style="color:#a6e22e">serveSVGProfile</span>(<span style="color:#a6e22e">pprofByRegion</span>(<span style="color:#a6e22e">computePprofSched</span>)))
+}
+</code></pre></div><p>这里就不扩展太多了，更多标准库中的使用方法大家可以自己去探索一下。</p>
+<p>在这最后总结一下使用<code>init</code>要注意的问题吧：</p>
+<ul>
+<li>编程时不要依赖<code>init</code>的顺序</li>
+<li>一个源文件下可以有多个<code>init</code>函数，代码比较长时可以考虑分多个<code>init</code>函数</li>
+<li>复杂逻辑不建议使用<code>init</code>函数，会增加代码的复杂性，可读性也会下降</li>
+<li>在<code>init</code>函数中也可以启动<code>goroutine</code>，也就是在初始化的同时启动新的<code>goroutine</code>，这并不会影响初始化顺序</li>
+<li><code>init</code>函数不应该依赖任何在<code>main</code>函数里创建的变量，因为<code>init</code>函数的执行是在<code>main</code>函数之前的</li>
+<li><code>init</code>函数在代码中不能被显示的调用，不能被引用（赋值给函数变量），否则会出现编译错误。</li>
+<li>导入包不要出现循环依赖，这样会导致程序编译失败</li>
+<li><code>Go</code>程序仅仅想要用一个<code>package</code>的<code>init</code>执行，我们可以这样使用：<code>import _ &quot;test_xxxx&quot;</code>，导入包的时候加上下划线就<code>ok</code>了</li>
+<li>包级别的变量初始化、<code>init</code>函数执行，这两个操作都是在同一个<code>goroutine</code>中调用的，按顺序调用，一次一个包</li>
+</ul>
+<h2 id="总结">总结</h2>
+<p>好啦，这篇文章到这里就结束了，本身<code>init</code>函数就很好理解，写这篇文章的目的就是让大家了解他的执行顺序，这样在日常开发中才不会写出<code>bug</code>。希望本文对大家有所帮助，我们下期见！</p>
+<p><strong>素质三连（分享、点赞、在看）都是笔者持续创作更多优质内容的动力！我是<code>asong</code>，我们下期见。</strong></p>
+<p><strong>创建了一个Golang学习交流群，欢迎各位大佬们踊跃入群，我们一起学习交流。入群方式：关注公众号获取。更多学习资料请到公众号领取。</strong></p>
+<p><img src="https://song-oss.oss-cn-beijing.aliyuncs.com/golang_dream/article/static/%E6%89%AB%E7%A0%81_%E6%90%9C%E7%B4%A2%E8%81%94%E5%90%88%E4%BC%A0%E6%92%AD%E6%A0%B7%E5%BC%8F-%E6%A0%87%E5%87%86%E8%89%B2%E7%89%88.png" alt=""></p>
+<p>推荐往期文章：</p>
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/wBp4k7pJLNeSzyLVhGHLEA">Go语言如何实现可重入锁？</a></li>
+<li><a href="https://mp.weixin.qq.com/s/XJ9O9O4KS3LbZL0jYnJHPg">Go语言中new和make你使用哪个来分配内存？</a></li>
+<li><a href="https://mp.weixin.qq.com/s/mzSCWI8C_ByIPbb07XYFTQ">源码剖析panic与recover，看不懂你打我好了！</a></li>
+<li><a href="https://mp.weixin.qq.com/s/dNeCIwmPei2jEWGF6AuWQw">空结构体引发的大型打脸现场</a></li>
+<li><a href="https://mp.weixin.qq.com/s/wURQFRt2ISz66icW7jbHFw">Leaf—Segment分布式ID生成系统（Golang实现版本）</a></li>
+<li><a href="https://mp.weixin.qq.com/s/Dt46eoEXXXZc2ymr67_LVQ">面试官：两个nil比较结果是什么？</a></li>
+<li><a href="https://mp.weixin.qq.com/s/ffEsTpO-tyNZFR5navAbdA">面试官：你能用Go写段代码判断当前系统的存储方式吗?</a></li>
+<li><a href="https://mp.weixin.qq.com/s/8VQxK_Xh-bkVoOdMZs4Ujw">如何平滑切换线上Elasticsearch索引</a></li>
+</ul>
+
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://asong2020.github.io/tags/%E6%A0%87%E5%87%86%E5%BA%93/">标准库</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/2021/06/go%E6%A0%87%E5%87%86%E5%BA%93%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%9A%84/" data-tooltip="Go标准库是如何实现二分查找的">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/2021/05/go%E8%AF%AD%E8%A8%80%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81/" data-tooltip="Go语言如何实现可重入锁">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 asong. All Rights Reserved
+  </span>
+  <script src="https://utteranc.es/client.js"
+          repo="liangyuanpeng/liangyuanpeng.github.io"
+          issue-term="title"
+          theme="github-light"
+          crossorigin="anonymous"
+          async>
+  </script>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="1">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/2021/06/go%E6%A0%87%E5%87%86%E5%BA%93%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE%E7%9A%84/" data-tooltip="Go标准库是如何实现二分查找的">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://asong2020.github.io/2021/05/go%E8%AF%AD%E8%A8%80%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81/" data-tooltip="Go语言如何实现可重入锁">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="1">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://song-oss.oss-cn-beijing.aliyuncs.com/wx/blog_head.jpeg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">asong</h4>
+    
+      <div id="about-card-bio">欢迎关注公众号：<strong>Golang梦工厂</strong></div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        后端开发工程师
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        深圳
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://asong2020.github.io/images/cover.jpg');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://asong2020.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+  
+
+
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      CommonHTML: { linebreaks: { automatic: true } },
+      tex2jax: { inlineMath: [ ['$', '$'], ['\\(','\\)'] ], displayMath: [ ['$$','$$'], ['\\[', '\\]'] ], processEscapes: false },
+      messageStyle: 'none'
+    });
+  </script>
+
+
+
+    
+  </body>
+</html>
+

@@ -6,7 +6,16 @@
     <description>Recent content in Categories on asong的成长记录小屋</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 31 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://asong2020.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 15 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://asong2020.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go源码</title>
+      <link>https://asong2020.github.io/categories/go%E6%BA%90%E7%A0%81/</link>
+      <pubDate>Tue, 15 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://asong2020.github.io/categories/go%E6%BA%90%E7%A0%81/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Go应用</title>
       <link>https://asong2020.github.io/categories/go%E5%BA%94%E7%94%A8/</link>
@@ -22,15 +31,6 @@
       <pubDate>Thu, 20 May 2021 00:00:00 +0000</pubDate>
       
       <guid>https://asong2020.github.io/categories/go%E9%9D%A2%E8%AF%95/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Go源码</title>
-      <link>https://asong2020.github.io/categories/go%E6%BA%90%E7%A0%81/</link>
-      <pubDate>Sun, 18 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://asong2020.github.io/categories/go%E6%BA%90%E7%A0%81/</guid>
       <description></description>
     </item>
     
